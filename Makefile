@@ -1,5 +1,5 @@
-run		:
+xd:
 	python3 bot.py
 
-test		:
+test:
 	python3 test.py

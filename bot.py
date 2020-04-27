@@ -19,7 +19,7 @@ TOKEN = open('token.txt').read().strip()
 
 
 def author(update, context):
-    message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, 2020"
+    message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, rodrigo.arian.huapaya@est.fib.upc.edu"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 # crea objectes per treballar amb Telegram
