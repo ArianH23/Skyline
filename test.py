@@ -16,12 +16,16 @@ h = 3
 d = 70
 # plt.figure(figsize=(w, h), dpi=d)
 
-y = [1, 1, 2, 1, 5, 0, 50, 2]
-auxy = y
+
+#VALORES QUE HAY ENTRE CADA INTERVALO
+y = [1, 1, 2, 1, 5, 0, 50, 0]
+# auxy = y
 # for i in range(0,2):
 #     y = y+(auxy)
 # #-----------------------------------------------------------------------
-listX=[0, 1, 2, 3, 4,5,26,80]
+
+#INTERVALOS
+intervalos=[0, 1, 2, 3, 4,5,26,80]
 # lastOfX = listX[-1]+1
 
 # auxx = map(lambda x: x + lastOfX, listX) 
@@ -36,6 +40,6 @@ listX=[0, 1, 2, 3, 4,5,26,80]
 
 # print (listX)
 # print (y)
-plt.hist(listX, bins=listX, weights=y)
+plt.hist(intervalos, bins=intervalos, weights=y)
 
 plt.show()
