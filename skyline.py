@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import random
 
 class Skyline:
 
@@ -6,22 +7,25 @@ class Skyline:
         self.id = id
         self.intervalos = container
         self.values = [values] +[0]
-        print ("creado")
-        print (container)
+        self.color = (random.random(), random.random(), random.random())
 
-    def show(self):
-        print ("valores")
-        print (self.values)
-        print (self.intervalos)
-        plt.hist(self.intervalos, bins=self.intervalos, weights=self.values)
+    def saveImage(self):
+        plt.hist(self.intervalos, bins=self.intervalos, weights=self.values,color=self.color)
 
         #Necessary to plot only integer values in the axis
-        self.xyints()
+        # # # # # self.xyints()
 
         # plt.show()
-        plt.savefig('plot.png')
+        pathOfImage = "plot.png"
+        plt.savefig(pathOfImage)
+        # self.color = plt.get_color()
+        plt.clf()
+        return pathOfImage
 
     def xyints(self):
+        """
+        Hace que los valores en los ejes X e Y del plot actual sean enteros y no floats
+        """
         yint = []
         locs, labels = plt.yticks()
         for each in locs:

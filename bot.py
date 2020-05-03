@@ -3,7 +3,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 # from telegram import Message, User, Update, Bot as msg, user, update, bot
 from skyline import *
 # nameOfUser = update.effective_chat.username
-
+import os
 # defineix una funció que sal
 mySkylines = {}
 
@@ -20,16 +20,27 @@ def author(update, context):
 
 def leeElTexto(update, context):
     receivedMessage = update.message.text
-    print (receivedMessage.find(":="))
-    if (receivedMessage.find(":=") >= 0):
+
+    if (mySkylines.__contains__(receivedMessage)):
+
+        sky = mySkylines[receivedMessage]
+        
+        sendPhoto (sky, update, context)
+
+    elif (receivedMessage.find(":=") >= 0):
+
         message = receivedMessage.split()
+        sky = createNewSkyline(message)
 
-        createNewSkyline(message)
-
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
+        sendPhoto (sky, update, context)
 
 
+def sendPhoto(skyline, update, context):
+    img = skyline.saveImage()
+    context.bot.send_photo(
+            chat_id=update.effective_chat.id,
+            photo=open(img, 'rb'))
+    os.remove(img)
 
 def createNewSkyline(message):
     id = message[0]
@@ -38,12 +49,14 @@ def createNewSkyline(message):
 
     for i in range(0, len(val)): 
         val[i] = int(val[i]) 
-    print (val)
+
     sky = Skyline(id, [val[0] ,val[2]], val[1])
-    sky.show()
+    img = sky.saveImage()
+    
     print(id +" "+ op)
     print (val)
-    
+    mySkylines[id] = sky
+    return sky
     
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
