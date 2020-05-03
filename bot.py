@@ -1,10 +1,10 @@
 # importa l'API de Telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-# from telegram import Message, User, Update, Bot as msg, user, update, bot
+
 from skyline import *
-# nameOfUser = update.effective_chat.username
+
 import os
-# defineix una funció que sal
+
 mySkylines = {}
 
 def start(update, context):

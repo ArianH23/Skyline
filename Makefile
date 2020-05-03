@@ -1,5 +1,10 @@
-xd:
+default:
 	python3 bot.py
+antlrv	:
+	antlr4 -Dlanguage=Python3 -no-listener -visitor Skyline.g
 
-test:
-	python3 test.py
+clean	:
+	rm Skyline.interp
+	rm Skyline.tokens
+	rm SkylineLexer*
+	rm SkylineP*
