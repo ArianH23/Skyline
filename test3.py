@@ -77,7 +77,7 @@ def foo(index1, index2):
             intervals.append(arr2[index2])
             if val1[index1 - 1] < val2[index2]:
 
-                values.append(val2[index2-1])
+                values.append(val2[index2])
             else:
                 values.append(val1[index1-1])
             index2 = index2 + 1
@@ -85,10 +85,10 @@ def foo(index1, index2):
         elif arr1[index1] < arr2[index2]:
 
             intervals.append(arr1[index1])
-            if val2[index2 - 1] > val1[index1-1]:
+            if val2[index2 - 1] > val1[index1]:
                 values.append(val2[index2 - 1])
             else:
-                values.append(val1[index1 - 1])
+                values.append(val1[index1])
             index1 = index1 + 1
 
         elif arr1[index1] == arr2[index2]:
@@ -111,21 +111,22 @@ while arr1[index1] == arr2[index2]:
     index1 = index1 + 1
     index2 = index2 + 1
 
+
 if arr1[index1] < arr2[index2]:
-    intervals.append(arr1[index1])
+    # intervals.append(arr1[index1])
     # values.append(val1[index1])
-    index1 = index1 + 1
+    # index1 = index1 + 1
     index1, index2 = foo(index1, index2)
 
 print (str(index1) +" " + str(index2))
 
 if index1 != arr1.__len__() :
     intervals = intervals + arr1[index1:]
-    values = values + arr1[index1-1:-1]
+    values = values + arr1[index1:-1]
 
 elif index2 != arr2.__len__():
     intervals = intervals + arr2[index2:]
-    values = values + val2[index2-1:-1]
+    values = values + val2[index2:-1]
             
 
 def posIntermedia(x, arr):
