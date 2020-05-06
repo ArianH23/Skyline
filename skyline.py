@@ -3,10 +3,10 @@ import random
 
 class Skyline:
 
-    def __init__(self, id, container, values):
+    def __init__(self, id, val0, val1, val2):
         self.id = id
-        self.intervalos = container
-        self.values = [values] +[0]
+        self.intervalos = [val0, val2]
+        self.values = [val1] +[0]
         self.color = (random.random(), random.random(), random.random())
 
     def saveImage(self):
@@ -19,6 +19,7 @@ class Skyline:
         pathOfImage = "plot.png"
         plt.savefig(pathOfImage)
         # self.color = plt.get_color()
+        print ("hi there")
         plt.clf()
         return pathOfImage
 
@@ -37,3 +38,14 @@ class Skyline:
         for each in locs:
             xint.append(int(each))
         plt.xticks(xint)
+
+    def union (self, sky):
+        i1 = 0
+        i2 = 1
+        j1 = 0
+        j2 = 1
+
+        container = []
+        values = []
+        containerPosition = min
+        while i2 != self.intervalos.__len__() and j2 != sky.intervalos.__len__():

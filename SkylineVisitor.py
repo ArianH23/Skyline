@@ -1,4 +1,5 @@
 # Generated from Skyline.g by ANTLR 4.7.2
+from skyline import *
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
@@ -31,12 +32,28 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#assignment.
     def visitAssignment(self, ctx:SkylineParser.AssignmentContext):
-        return self.visitChildren(ctx)
+
+        ident = self.visit(ctx.ident())
+        print("el ident es " + ident)
+        sky = self.visit(ctx.expr())
+
+        # print("xdddd")
+        # return sky.saveImage()
+        sky.saveImage()
+
+        return sky
+
+
+    # Visit a parse tree produced by SkylineParser#skylineValue.
+    def visitSkylineValue(self, ctx:SkylineParser.SkylineValueContext):
+        print("soy val")
+        return self.visit(ctx.sky())
 
 
     # Visit a parse tree produced by SkylineParser#exprIdent.
     def visitExprIdent(self, ctx:SkylineParser.ExprIdentContext):
-        return self.visitChildren(ctx)
+        return self.visit(ctx.ident())
+
 
 
     # Visit a parse tree produced by SkylineParser#instersection.
@@ -56,6 +73,18 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#ident.
     def visitIdent(self, ctx:SkylineParser.IdentContext):
+        id = ctx.ID().getText()
+        return id
+
+
+    # Visit a parse tree produced by SkylineParser#sky.
+    def visitSky(self, ctx:SkylineParser.SkyContext):
+        print ("holas")
+        val0 = int(ctx.INTVAL(0).getText())
+        val1 = int(ctx.INTVAL(1).getText())
+        val2 = int(ctx.INTVAL(2).getText())
+        print ("dew")
+        return  Skyline("a", val0, val1, val2)
         return self.visitChildren(ctx)
 
 

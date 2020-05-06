@@ -15,12 +15,17 @@ expr    : LP expr RP                                # parenthesis
         
         | ident ASSIGN expr                         # assignment
 
+        | sky                                       # skylineValue
+        
         | ident                                     # exprIdent
         ;
 
 ident   : ID
         ;
 
+sky: LP INTVAL COMMA INTVAL COMMA INTVAL RP;
+
+COMMA     : ',';
 ASSIGN    : ':=';
 PLUS      : '+';
 MULT      : '*';
