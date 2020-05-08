@@ -59,25 +59,37 @@ class Skyline:
             index1 = 0
             index2 = 0
 
-            intervalos, values = self.union(arr1, arr2, val1, val2)
+            intervalos, values = self.union (arr2, val2)
 
             return Skyline("xd", intervalos, values)
 
-    def union(self, arr1, arr2, val1, val2):
+    def union(self, arr2, val2):
         index1 = 0
         index2 = 0
+        arr1 = self.intervalos
+        val1 = self.values
 
         intervals = []
         values = []
 
-        while index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
+        while  index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
 
             values.append(max(val1[index1], val2[index2]))
             intervals.append(arr1[index1])
 
             index1 = index1 + 1
             index2 = index2 + 1
-        
+        # For the whole operation to work, the program has to take the 
+        # array with the first smallest value as a "reference" to check
+        # the values of the other array, this conditional makes sure that
+        # arr1 is the array which has the smallest first value
+        if index1 < arr1.__len__() and index2 < arr2.__len__():
+            if arr2[index2] < arr1[index1]:
+                arr1, arr2 = arr2, arr1
+                index1, index2 = index2, index1
+                val1, val2 = val2, val1
+
+        #Iterating
         while index1 != arr1.__len__() and index2 != arr2.__len__():
 
             if arr1[index1] > arr2[index2]:
@@ -88,14 +100,18 @@ class Skyline:
                 else:
                     values.append(val1[index1-1])
                 index2 = index2 + 1
-
+            
             elif arr1[index1] < arr2[index2]:
 
                 intervals.append(arr1[index1])
+                # "if index2 > 0" It is not necessary to check this conditions, since if
+                # index2 == 0 then index2-1 == -1 and the elem at post -1 of val2 is 0
+                # which is the neutral value of the whole operation
                 if val2[index2 - 1] > val1[index1]:
                     values.append(val2[index2 - 1])
                 else:
                     values.append(val1[index1])
+
                 index1 = index1 + 1
 
             elif arr1[index1] == arr2[index2]:
@@ -106,7 +122,7 @@ class Skyline:
                 index1 = index1 + 1
                 index2 = index2 + 1
 
-        if index1 != arr1.__len__():
+        if index1 != arr1.__len__() :
             intervals = intervals + arr1[index1:]
             values = values + arr1[index1:-1]
 
@@ -117,6 +133,26 @@ class Skyline:
         if values.__len__() == intervals.__len__()-1:
             values.append(0)
 
-        return intervals, values
+        # For the intervals and values to look cleaner,
+        # it is necessary some kind of flattening around the results.
+        # We don't want consecutive intervals with the same values to appear more than once.
+        flattenedIntervals = []
+        flattenedIntervals.append(intervals[0])
+        flattenedValues = []
 
-    
+        lastVal = values[0]
+
+        for i in range (1, intervals.__len__()):
+            if i == intervals.__len__():
+                flattenedIntervals.append(intervals[i])
+                flattenedValues.append(lastVal)
+
+            if values[i] != lastVal:
+                flattenedIntervals.append(intervals[i])
+                flattenedValues.append(lastVal)
+
+                lastVal = values[i]
+
+        flattenedValues.append(0)
+
+        return flattenedIntervals, flattenedValues

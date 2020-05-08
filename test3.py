@@ -5,8 +5,8 @@ import sys
 arr2 = [-8,-3,-2, 1, 3, 4, 5, 6, 7]
 val2 =   [14,2,5, 6, 3, 0, 3, 6, 0]
 
-arr1 = [3, 7, 8]
-val1 =   [5, 10 ,0]
+arr1 = [3, 7]
+val1 =   [5,0]
 
 # arr1 = [0, 1, 3, 5, 7]
 # val1 =   [1, 6, 0, 2, 0]
@@ -136,7 +136,6 @@ def foo():
     flattenedIntervals.append(intervals[0])
     flattenedValues = []
 
-    lastInter = intervals[0]
     lastVal = values[0]
 
     for i in range (1, intervals.__len__()):
@@ -149,14 +148,10 @@ def foo():
             flattenedValues.append(lastVal)
 
             lastVal = values[i]
-            lastInter = intervals[i]
 
     flattenedValues.append(0)
-    print(flattenedIntervals)
-    print(flattenedValues)
-    print()
 
-    return intervals, values
+    return flattenedIntervals, flattenedValues
 
 # while index1 != (val1.__len__()) and index2 != (val2.__len__()):
 
