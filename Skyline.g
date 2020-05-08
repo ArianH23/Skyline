@@ -7,16 +7,16 @@ expr    : LP expr RP                                # parenthesis
 
         | MINUS expr                                # mirror
 
-        | expr MULT expr                            # instersection
-        | expr MULT INTVAL                          # replication
+        | expr MULT expr                            # interRepli
 
-        | expr (PLUS|MINUS) expr                    # union
-        | expr (PLUS|MINUS) INTVAL                  # offset
+        | expr (PLUS|MINUS) expr                    # unionOffset
         
         | ident ASSIGN expr                         # assignment
 
         | sky                                       # skylineValue
         
+        | INTVAL                                    # integerVal
+
         | ident                                     # exprIdent
         ;
 
