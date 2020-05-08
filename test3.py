@@ -1,17 +1,18 @@
 import matplotlib.pyplot as plt
 import sys
 
-# arr1 = [-8, 1, 3, 4, 5, 6, 7]
-# val1 =   [14, 6, 3, 0, 3, 6, 0]
 
-# arr2 = [3, 7, 8]
-# val2 =   [5, 10 ,0]
+arr2 = [-8,-3,-2, 1, 3, 4, 5, 6, 7]
+val2 =   [14,2,5, 6, 3, 0, 3, 6, 0]
 
-arr1 = [0, 1, 3, 5, 7]
-val1 =   [1, 6, 0, 2, 0]
+arr1 = [3, 7, 8]
+val1 =   [5, 10 ,0]
 
-arr2 = [0, 2, 4, 6, 8]
-val2 =   [1, 2, 6, 5, 0]
+# arr1 = [0, 1, 3, 5, 7]
+# val1 =   [1, 6, 0, 2, 0]
+
+# arr2 = [0, 2, 4, 6, 8]
+# val2 =   [1, 2, 6, 5, 0]
 
 i1 = 0
 i2 = 0
@@ -61,29 +62,31 @@ def foo():
     index1 = 0
     index2 = 0
 
+    arr2 = [-8,-3,-2, 1, 3, 4, 5, 6]
+    val2 =   [14,2,5, 6, 3, 0, 3, 0]
+
+    arr1 = [3, 7]
+    val1 =   [5,0]
 
     intervals = []
     values = []
 
     while  index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
-        print (index1)
-        print (index2)
-        print ()
+
         values.append(max(val1[index1], val2[index2]))
         intervals.append(arr1[index1])
 
         index1 = index1 + 1
         index2 = index2 + 1
 
+    if index1 < arr1.__len__() and index2 < arr2.__len__():
+        if arr2[index2] < arr1[index1]:
+            arr1, arr2 = arr2, arr1
+            index1, index2 = index2, index1
+            val1, val2 = val2, val1
+
 
     while index1 != arr1.__len__() and index2 != arr2.__len__():
-        print (arr1[index1:])
-        print (arr2[index2:])
-        print ("\n")
-        print (intervals)
-        print (values)
-        input(input('? '))
-
 
         if arr1[index1] > arr2[index2]:
             intervals.append(arr2[index2])
@@ -97,10 +100,17 @@ def foo():
         elif arr1[index1] < arr2[index2]:
 
             intervals.append(arr1[index1])
+            # "if index2 > 0" It is not necessary to check this conditions, since if
+            # index2 == 0 then index2-1 == -1 and the elem at post -1 of val2 is 0
+            # which is the neutral value of the whole operation
             if val2[index2 - 1] > val1[index1]:
                 values.append(val2[index2 - 1])
             else:
                 values.append(val1[index1])
+
+            # else:
+            #     values.append(val1[index1])
+
             index1 = index1 + 1
 
         elif arr1[index1] == arr2[index2]:
@@ -121,6 +131,30 @@ def foo():
 
     if values.__len__() == intervals.__len__()-1:
         values.append(0)
+
+    flattenedIntervals = []
+    flattenedIntervals.append(intervals[0])
+    flattenedValues = []
+
+    lastInter = intervals[0]
+    lastVal = values[0]
+
+    for i in range (1, intervals.__len__()):
+        if i == intervals.__len__():
+            flattenedIntervals.append(intervals[i])
+            flattenedValues.append(lastVal)
+
+        if values[i] != lastVal:
+            flattenedIntervals.append(intervals[i])
+            flattenedValues.append(lastVal)
+
+            lastVal = values[i]
+            lastInter = intervals[i]
+
+    flattenedValues.append(0)
+    print(flattenedIntervals)
+    print(flattenedValues)
+    print()
 
     return intervals, values
 
