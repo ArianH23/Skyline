@@ -4,7 +4,7 @@ import random
 
 class Skyline:
 
-    def __init__(self, id, interval1, heights, interval2 = None):
+    def __init__(self, interval1, heights, interval2=None):
         if interval2 is None:
             self.intervalos = interval1
             self.values = heights
@@ -12,20 +12,22 @@ class Skyline:
         else:
             self.intervalos = [interval1, interval2]
             self.values = [heights] + [0]
-        
-        self.id = id
-        self.color = (random.random(), random.random(), random.random())
 
+
+        self.color = (random.random(), random.random(), random.random())
 
     def __add__(self, other):
         if isinstance(other, Skyline):
             arr2 = other.intervalos
             val2 = other.values
+            intervalos, values = self.union(arr2, val2)
 
+            return Skyline(intervalos, values)
 
-            intervalos, values = self.union (arr2, val2)
+        elif isinstance(other, int):
+            intervalOff = self.moveOffset(other)
 
-            return Skyline("xd", intervalos, values)
+            return Skyline(intervalOff, self.values)
 
     def __mul__(self, other):
         if isinstance(other, Skyline):
@@ -34,8 +36,37 @@ class Skyline:
 
             intervalos, values = self.intersection(arr2, val2)
 
-            return Skyline("xd", intervalos, values)
-    
+            return Skyline(intervalos, values)
+
+        elif isinstance(other, int):
+            intervals, values = self.replicate(other)
+            print("hi")
+            return Skyline(intervals, values)
+
+
+    def moveOffset(self, offset):
+        intervalos = [x + offset for x in self.intervalos]
+        
+        return intervalos
+
+    def replicate(self, rep):
+        distance = self.intervalos[-1] - self.intervalos[0]
+        intervalsToAppend = self.intervalos[1:]
+        valuesToReplicate = self.values[:-1]
+
+        finalIntervals = self.intervalos
+
+        i = 1
+
+        while i < rep:
+            intervalsToAppend = [x + distance for x in intervalsToAppend]
+            finalIntervals = finalIntervals + intervalsToAppend
+            i += 1
+
+        valuesToReplicate = valuesToReplicate * rep
+        valuesToReplicate.append(0)
+        return finalIntervals, valuesToReplicate
+
     def saveImage(self):
         plt.hist(self.intervalos, bins=self.intervalos,
                  weights=self.values, color=self.color)
@@ -47,7 +78,7 @@ class Skyline:
         pathOfImage = "plotxd.png"
         plt.savefig(pathOfImage)
         # self.color = plt.get_color()
-        print ("hi there")
+        print("hi there")
         plt.clf()
         return pathOfImage
 
@@ -68,8 +99,6 @@ class Skyline:
             xint.append(int(each))
         plt.xticks(xint)
 
-
-
     def union(self, arr2, val2):
         index1 = 0
         index2 = 0
@@ -79,14 +108,14 @@ class Skyline:
         intervals = []
         values = []
 
-        while  index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
+        while index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
 
             values.append(max(val1[index1], val2[index2]))
             intervals.append(arr1[index1])
 
             index1 = index1 + 1
             index2 = index2 + 1
-        # For the whole operation to work, the program has to take the 
+        # For the whole operation to work, the program has to take the
         # array with the first smallest value as a "reference" to check
         # the values of the other array, this conditional makes sure that
         # arr1 is the array which has the smallest first value
@@ -96,7 +125,7 @@ class Skyline:
                 index1, index2 = index2, index1
                 val1, val2 = val2, val1
 
-        #Iterating
+        # Iterating
         while index1 != arr1.__len__() and index2 != arr2.__len__():
 
             if arr1[index1] > arr2[index2]:
@@ -107,7 +136,7 @@ class Skyline:
                 else:
                     values.append(val1[index1-1])
                 index2 = index2 + 1
-            
+
             elif arr1[index1] < arr2[index2]:
 
                 intervals.append(arr1[index1])
@@ -129,7 +158,7 @@ class Skyline:
                 index1 = index1 + 1
                 index2 = index2 + 1
 
-        if index1 != arr1.__len__() :
+        if index1 != arr1.__len__():
             intervals = intervals + arr1[index1:]
             values = values + arr1[index1:-1]
 
@@ -149,7 +178,7 @@ class Skyline:
 
         lastVal = values[0]
 
-        for i in range (1, intervals.__len__()):
+        for i in range(1, intervals.__len__()):
             if i == intervals.__len__():
                 flattenedIntervals.append(intervals[i])
                 flattenedValues.append(lastVal)
@@ -163,7 +192,7 @@ class Skyline:
         flattenedValues.append(0)
 
         return flattenedIntervals, flattenedValues
-    
+
     def intersection(self, arr2, val2):
         index1 = 0
         index2 = 0
@@ -173,7 +202,7 @@ class Skyline:
         intervals = []
         values = []
 
-        while  index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
+        while index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
 
             values.append(min(val1[index1], val2[index2]))
             intervals.append(arr1[index1])
@@ -187,7 +216,6 @@ class Skyline:
                 index1, index2 = index2, index1
                 val1, val2 = val2, val1
 
-
         while index1 != arr1.__len__() and index2 != arr2.__len__():
 
             if arr1[index1] > arr2[index2]:
@@ -198,7 +226,7 @@ class Skyline:
                 else:
                     values.append(val1[index1-1])
                 index2 = index2 + 1
-            
+
             elif arr1[index1] < arr2[index2]:
 
                 intervals.append(arr1[index1])
@@ -220,7 +248,6 @@ class Skyline:
                 index1 = index1 + 1
                 index2 = index2 + 1
 
-        
         if values.__len__() == intervals.__len__()-1:
             values.append(0)
 
@@ -230,7 +257,7 @@ class Skyline:
 
         lastVal = values[0]
 
-        for i in range (1, intervals.__len__()):
+        for i in range(1, intervals.__len__()):
             if i == intervals.__len__():
                 flattenedIntervals.append(intervals[i])
                 flattenedValues.append(lastVal)

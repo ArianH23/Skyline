@@ -50,7 +50,7 @@ def createNewSkyline(message):
     for i in range(0, len(val)): 
         val[i] = int(val[i]) 
 
-    sky = Skyline(id, val[0], val[1], val[2])
+    sky = Skyline(val[0], val[1], val[2])
     img = sky.saveImage()
     
     print(id +" "+ op)
