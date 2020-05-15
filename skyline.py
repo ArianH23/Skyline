@@ -40,14 +40,41 @@ class Skyline:
 
         elif isinstance(other, int):
             intervals, values = self.replicate(other)
-            print("hi")
             return Skyline(intervals, values)
+    
+    def __neg__(self):
+        intervals, values = self.mirror()
+        return Skyline(intervals, values)
+
+    def mirror(self):
+        intervalsDistance = []
+        reversedValues = self.values[:-1]
+        reversedValues.reverse()
+        reversedValues.append(0)
+
+        i = 1
+
+        while i < self.intervalos.__len__():
+            intervalsDistance.append(self.intervalos[i]- self.intervalos[i-1])
+            i += 1
+        
+        lastValueInInterval = self.intervalos[0]
+        finalIntervals = [lastValueInInterval]
+
+        i = intervalsDistance.__len__() - 1
+        
+        while i >= 0:
+            lastValueInInterval += intervalsDistance[i]
+            finalIntervals.append(lastValueInInterval)
+            i -= 1
+        
+        return finalIntervals, reversedValues
 
 
     def moveOffset(self, offset):
-        intervalos = [x + offset for x in self.intervalos]
+        intervals = [x + offset for x in self.intervalos]
         
-        return intervalos
+        return intervals
 
     def replicate(self, rep):
         distance = self.intervalos[-1] - self.intervalos[0]
@@ -78,7 +105,6 @@ class Skyline:
         pathOfImage = "plotxd.png"
         plt.savefig(pathOfImage)
         # self.color = plt.get_color()
-        print("hi there")
         plt.clf()
         return pathOfImage
 
