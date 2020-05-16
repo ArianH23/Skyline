@@ -3,8 +3,9 @@ from antlr4 import *
 from SkylineLexer import SkylineLexer
 from SkylineParser import SkylineParser
 from SkylineVisitor import SkylineVisitor
-
+from EvalVisitor import EvalVisitor
 map = {}
+visitor = EvalVisitor(map)
 
 while True:
     input_stream = InputStream(input('? '))
@@ -16,7 +17,7 @@ while True:
 
     parser = SkylineParser(token_stream)
 
-    tree = parser.root() 
+    tree = parser.root()
 
-    visitor = SkylineVisitor()
+   
     visitor.visit(tree)
