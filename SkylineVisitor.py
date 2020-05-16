@@ -13,34 +13,62 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#root.
     def visitRoot(self, ctx: SkylineParser.RootContext):
-        print("bjkfa")
-        return self.visitChildren(ctx)
+        x = self.visit(ctx.statement())
+
+        return x
+
+    # Visit a parse tree produced by SkylineParser#exprVal.
+    def visitExprVal(self, ctx:SkylineParser.ExprValContext):
+        res = self.visitChildren(ctx)
+        
+        if res != "Error":
+            res.saveImage()
+        
+        return res
 
     # Visit a parse tree produced by SkylineParser#parenthesis.
     def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
-        return self.visitChildren(ctx)
+        return self.visit(ctx.expr())
 
     # Visit a parse tree produced by SkylineParser#mirror.
     def visitMirror(self, ctx: SkylineParser.MirrorContext):
-        return self.visitChildren(ctx)
+        sky = self.visit(ctx.expr())
+        
+        if not isinstance(sky,Skyline):
+            return "Error"
 
+        return -sky
+        
     # Visit a parse tree produced by SkylineParser#instersection.
     def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
-        return self.visitChildren(ctx)
+        sky = self.visit(ctx.expr(0))
+        val = self.visit(ctx.expr(1))
+
+        ret = sky * val
+        return ret
+
+        # return "Error"
 
     # Visit a parse tree produced by SkylineParser#union.
     def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
-        return self.visitChildren(ctx)
+        sky = self.visit(ctx.expr(0))
+        val = self.visit(ctx.expr(1))
+        
+        if ctx.PLUS():
+            ret = sky + val
+            return ret
+        elif ctx.MINUS():
+            ret = sky - val
+            return ret
+
+        return "Error"
 
     # Visit a parse tree produced by SkylineParser#assignment.
     def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
-        print("d")
         ident = self.visit(ctx.ident())
         # print("el ident es " + ident)
         sky = self.visit(ctx.expr())
 
-        # print("xdddd")
-        # return sky.saveImage()
         sky.saveImage()
 
         return sky
@@ -52,7 +80,6 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#skylineValue.
     def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
-
         return self.visitSkyCreation(ctx.skyCreation())
 
     def visitIntegerVal(self, ctx: SkylineParser.IntegerValContext):
@@ -66,10 +93,7 @@ class SkylineVisitor(ParseTreeVisitor):
         # return self.visitChildren(ctx)
 
     def visitSky(self, ctx: SkylineParser.SkyContext):
-        # l = [n for n in ctx.getChildren()]
-        # print (l[1])
-        # print (ctx.INTVAL().getText())
-        # print (ctx.getText())
+        
         val0 = int(ctx.INTVAL(0).getText())
         val1 = int(ctx.INTVAL(1).getText())
         val2 = int(ctx.INTVAL(2).getText())

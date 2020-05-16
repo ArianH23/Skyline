@@ -29,6 +29,12 @@ class Skyline:
 
             return Skyline(intervalOff, self.values)
 
+    def __sub__(self, other):
+        if isinstance(other, int):
+            intervalOff = self.moveOffset(-other)
+
+            return Skyline(intervalOff, self.values)
+
     def __mul__(self, other):
         if isinstance(other, Skyline):
             arr2 = other.intervalos
@@ -295,5 +301,9 @@ class Skyline:
                 lastVal = values[i]
 
         flattenedValues.append(0)
+        
+        while flattenedValues[0] == 0:
+            flattenedIntervals.pop(0)
+            flattenedValues.pop(0)
 
         return flattenedIntervals, flattenedValues
