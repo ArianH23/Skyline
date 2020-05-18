@@ -6,11 +6,12 @@ if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
 else:
     from SkylineParser import SkylineParser
-
+import pickle
 
 class EvalVisitor(SkylineVisitor):
-    def __init__(self, ts):
+    def __init__(self, ts, id):
         self.ts = ts
+        self.id = id
 
     def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
         ident = self.visit(ctx.ident())
@@ -18,6 +19,11 @@ class EvalVisitor(SkylineVisitor):
         sky = self.visit(ctx.expr())
         
         self.ts[ident] = sky
+
+        pickle_out = open("Data/" + self.id + ".dict", "wb")
+        pickle.dump(self.ts, pickle_out)
+        pickle_out.close()
+
         img = sky.saveImage()
         return img
 
@@ -27,7 +33,8 @@ class EvalVisitor(SkylineVisitor):
         print ("error")
         if id in self.ts:
             sky = self.ts.get(id)
-            return sky
+            print (id)
+            return sky.saveImage()
         
         else:
             return "Error"

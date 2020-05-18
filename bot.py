@@ -9,15 +9,15 @@ from SkylineParser import SkylineParser
 from SkylineVisitor import SkylineVisitor
 from EvalVisitor import EvalVisitor
 import os
+from os import path
+import pickle
 
-mySkylines = {}
-visitor = EvalVisitor(mySkylines)
 
 def start(update, context):
     print(update.effective_chat)
     print(context)
     username = update.effective_chat.first_name
-    message = "SkylineBot!\nBenvinlgut " + username + "!"
+    message = "SkylineBot!\nBenvingut " + username + "!"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
@@ -28,8 +28,20 @@ def author(update, context):
 
 def leeElTexto(update, context):
     message = update.message.text
+    print (message)
 
-    sky = parse(message)
+    userId = str(update.message.from_user['id'])
+    print(type(userId))
+    pathOfDict = "Data/" + userId +".dict"
+    userData = {}
+    print(path.exists(pathOfDict))
+
+    if path.exists(pathOfDict):
+        pickle_in = open(path, "rb")
+        userData = pickle.load(pickle_in)
+
+    print (userData)
+    sky = parse(message, userData, userId)
 
     sendPhoto(sky, update, context)
 
@@ -42,16 +54,18 @@ def sendPhoto(skyline, update, context):
     os.remove(skyline)
 
 
-def parse(message):
-    
+def parse(message, userData, userId):
+    visitor = EvalVisitor(userData, userId)
+    print ("parsing")
     code = InputStream(message)
+
     lexer = SkylineLexer(code)
     token_stream = CommonTokenStream(lexer)
     parser = SkylineParser(token_stream)
     tree = parser.root()
 
-    result = visitor.visit(tree)
-    return result
+    img = visitor.visit(tree)
+    return img
 
 
 # declara una constant amb el access token que llegeix de token.txt

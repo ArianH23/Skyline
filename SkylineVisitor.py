@@ -16,24 +16,14 @@ class SkylineVisitor(ParseTreeVisitor):
         return res
 
 
-    # Visit a parse tree produced by SkylineParser#assignment.
-    def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
-        ident = self.visit(ctx.ident())
-        # print("el ident es " + ident)
-        sky = self.visit(ctx.expr())
-        print("hahaha")
-        sky.saveImage()
-
-        return sky.saveImage()
-
     # Visit a parse tree produced by SkylineParser#exprVal.
     def visitExprVal(self, ctx:SkylineParser.ExprValContext):
         res = self.visitChildren(ctx)
         
-        if res != "Error":
-            res.saveImage()
+        img = res.saveImage()
         
-        return res
+        print(img)
+        return img
 
 
     # Visit a parse tree produced by SkylineParser#unionOffset.
@@ -64,11 +54,6 @@ class SkylineVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by SkylineParser#skylineValue.
     def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
         return self.visitSkyCreation(ctx.skyCreation())
-
-
-    # Visit a parse tree produced by SkylineParser#exprIdent.
-    def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
-        return self.visit(ctx.ident())
 
 
     # Visit a parse tree produced by SkylineParser#parenthesis.
