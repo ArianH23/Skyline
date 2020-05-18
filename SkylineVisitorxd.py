@@ -86,7 +86,18 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#sky.
     def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
-        return self.visitSky(ctx.sky(0))
+        print("about to create")
+        if ctx.sky(0):
+            return self.visitSky(ctx.sky(0))
+        if ctx.INTVAL(0):
+            print("we tryng")
+            buildings = ctx.INTVAL(0)
+            height = ctx.INTVAL(1)
+            width = ctx.INTVAL(2)
+            xmin = ctx.INTVAL(3)
+            xmax = ctx.INTVAL(4)
+            return Skyline(buildings,height,width,xmin,xmax,type="random")
+
 
         # return self.visitChildren(ctx)
 

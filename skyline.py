@@ -13,21 +13,22 @@ class Skyline:
             randomXMin = randint(xmin,maxFinal)
             firstSky = Skyline(randomXMin,randomHeight,randomXMin + randomWidth)
 
-            print (firstSky.intervalos)
-            print(firstSky.values)
+            # print (firstSky.intervalos)
+            # print(firstSky.values)
             for i in range (1,interval1):
+                print(i)
                 # print("randoming")
                 randomHeight = randint(1,heights)
                 randomXMin = randint(xmin,maxFinal)
                 randomWidth = randint(1,interval2)
                 # print(type(randomHeight))
-                print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
+                # print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
                 newSky = Skyline(randomXMin,randomHeight,randomXMin + randomWidth)
                 firstSky = firstSky + newSky
                 # print(firstSky.values)
-                input()
-                print (firstSky.intervalos)
-                print(firstSky.values)
+                # # input()
+                # print (firstSky.intervalos)
+                # print(firstSky.values)
 
             self.intervalos = firstSky.intervalos
             self.values = firstSky.values
@@ -222,7 +223,7 @@ class Skyline:
 
         if index1 != arr1.__len__():
             intervals = intervals + arr1[index1:]
-            values = values + arr1[index1:-1]
+            values = values + val1[index1:-1]
 
         elif index2 != arr2.__len__():
             intervals = intervals + arr2[index2:]
@@ -234,6 +235,8 @@ class Skyline:
         # For the intervals and values to look cleaner,
         # it is necessary some kind of flattening around the results.
         # We don't want consecutive intervals with the same values to appear more than once.
+
+
         flattenedIntervals = []
         flattenedIntervals.append(intervals[0])
         flattenedValues = []
