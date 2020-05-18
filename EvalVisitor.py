@@ -23,18 +23,19 @@ class EvalVisitor(SkylineVisitor):
         pickle_out = open("Data/" + self.id + ".dict", "wb")
         pickle.dump(self.ts, pickle_out)
         pickle_out.close()
-
+        
+        print(self.ts)
         img = sky.saveImage()
         return img
 
 
     def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
         id = self.visit(ctx.ident())
-        print ("error")
+
         if id in self.ts:
             sky = self.ts.get(id)
             print (id)
-            return sky.saveImage()
+            return sky
         
         else:
             return "Error"

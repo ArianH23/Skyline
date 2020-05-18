@@ -22,7 +22,7 @@ class SkylineVisitor(ParseTreeVisitor):
     def visitExprVal(self, ctx:SkylineParser.ExprValContext):
         res = self.visitChildren(ctx)
         
-        return res.saveImage()
+        return res
 
     # Visit a parse tree produced by SkylineParser#parenthesis.
     def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):

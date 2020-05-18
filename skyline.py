@@ -4,7 +4,7 @@ import random
 
 class Skyline:
 
-    def __init__(self, interval1, heights, interval2=None):
+    def __init__(self, interval1, heights, interval2=None, color=None):
         if interval2 is None:
             self.intervalos = interval1
             self.values = heights
@@ -13,8 +13,10 @@ class Skyline:
             self.intervalos = [interval1, interval2]
             self.values = [heights] + [0]
 
-
-        self.color = (random.random(), random.random(), random.random())
+        if color == None:
+            self.color = (random.random(), random.random(), random.random())
+        else:
+            self.color = color
 
     def __add__(self, other):
         if isinstance(other, Skyline):
@@ -46,11 +48,11 @@ class Skyline:
 
         elif isinstance(other, int):
             intervals, values = self.replicate(other)
-            return Skyline(intervals, values)
-    
+            return Skyline(intervals, values, color=self.color)
+
     def __neg__(self):
         intervals, values = self.mirror()
-        return Skyline(intervals, values)
+        return Skyline(intervals, values, color=self.color)
 
     def mirror(self):
         intervalsDistance = []
@@ -61,25 +63,24 @@ class Skyline:
         i = 1
 
         while i < self.intervalos.__len__():
-            intervalsDistance.append(self.intervalos[i]- self.intervalos[i-1])
+            intervalsDistance.append(self.intervalos[i] - self.intervalos[i-1])
             i += 1
-        
+
         lastValueInInterval = self.intervalos[0]
         finalIntervals = [lastValueInInterval]
 
         i = intervalsDistance.__len__() - 1
-        
+
         while i >= 0:
             lastValueInInterval += intervalsDistance[i]
             finalIntervals.append(lastValueInInterval)
             i -= 1
-        
-        return finalIntervals, reversedValues
 
+        return finalIntervals, reversedValues
 
     def moveOffset(self, offset):
         intervals = [x + offset for x in self.intervalos]
-        
+
         return intervals
 
     def replicate(self, rep):
@@ -301,7 +302,7 @@ class Skyline:
                 lastVal = values[i]
 
         flattenedValues.append(0)
-        
+
         while flattenedValues[0] == 0:
             flattenedIntervals.pop(0)
             flattenedValues.pop(0)

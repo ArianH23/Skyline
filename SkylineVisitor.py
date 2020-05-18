@@ -22,7 +22,6 @@ class SkylineVisitor(ParseTreeVisitor):
         
         img = res.saveImage()
         
-        print(img)
         return img
 
 

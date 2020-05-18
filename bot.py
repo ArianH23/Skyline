@@ -37,10 +37,12 @@ def leeElTexto(update, context):
     print(path.exists(pathOfDict))
 
     if path.exists(pathOfDict):
-        pickle_in = open(path, "rb")
+        print("why man")
+        pickle_in = open(pathOfDict, "rb")
         userData = pickle.load(pickle_in)
+        print(userData["a"])
+        print(userData)
 
-    print (userData)
     sky = parse(message, userData, userId)
 
     sendPhoto(sky, update, context)
