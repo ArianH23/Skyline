@@ -37,7 +37,6 @@ def leeElTexto(update, context):
     print(path.exists(pathOfDict))
 
     if path.exists(pathOfDict):
-        print("why man")
         pickle_in = open(pathOfDict, "rb")
         userData = pickle.load(pickle_in)
         print(userData["a"])

@@ -1,22 +1,51 @@
 from matplotlib import pyplot as plt
 import random
-
+from random import randint
 
 class Skyline:
 
-    def __init__(self, interval1, heights, interval2=None, color=None):
-        if interval2 is None:
-            self.intervalos = interval1
-            self.values = heights
+    def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None):
+
+        if type == "random":
+            maxFinal = xmax-interval2
+            randomWidth = randint(1,interval2)
+            randomHeight = randint(1,heights)
+            randomXMin = randint(xmin,maxFinal)
+            firstSky = Skyline(randomXMin,randomHeight,randomXMin + randomWidth)
+
+            print (firstSky.intervalos)
+            print(firstSky.values)
+            for i in range (1,interval1):
+                # print("randoming")
+                randomHeight = randint(1,heights)
+                randomXMin = randint(xmin,maxFinal)
+                randomWidth = randint(1,interval2)
+                # print(type(randomHeight))
+                print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
+                newSky = Skyline(randomXMin,randomHeight,randomXMin + randomWidth)
+                firstSky = firstSky + newSky
+                # print(firstSky.values)
+                input()
+                print (firstSky.intervalos)
+                print(firstSky.values)
+
+            self.intervalos = firstSky.intervalos
+            self.values = firstSky.values
+            self.color = firstSky.color
 
         else:
-            self.intervalos = [interval1, interval2]
-            self.values = [heights] + [0]
+            if interval2 is None:
+                self.intervalos = interval1
+                self.values = heights
 
-        if color == None:
-            self.color = (random.random(), random.random(), random.random())
-        else:
-            self.color = color
+            else:
+                self.intervalos = [interval1, interval2]
+                self.values = [heights] + [0]
+
+            if color == None:
+                self.color = (random.random(), random.random(), random.random())
+            else:
+                self.color = color
 
     def __add__(self, other):
         if isinstance(other, Skyline):

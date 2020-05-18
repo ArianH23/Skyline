@@ -12,6 +12,7 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#root.
     def visitRoot(self, ctx:SkylineParser.RootContext):
+        print("KAPPACHINO")
         res = self.visit(ctx.statement())
         return res
 
@@ -52,6 +53,7 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#skylineValue.
     def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
+        print("why hello there")
         return self.visitSkyCreation(ctx.skyCreation())
 
 
@@ -83,7 +85,21 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#skyCreation.
     def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
-        return self.visitSky(ctx.sky(0))
+        
+        if ctx.sky(0):
+            return self.visitSky(ctx.sky(0))
+
+        if ctx.INTVAL(0):
+            print("we trying")
+            buildings = int(ctx.INTVAL(0).getText())
+            height =int(ctx.INTVAL(1).getText())
+            width = int(ctx.INTVAL(2).getText())
+            xmin = int(ctx.INTVAL(3).getText())
+            xmax =int(ctx.INTVAL(4).getText())
+
+            sky = Skyline(buildings,height,width,xmin,xmax,type="random")
+
+            return sky
 
 
     # Visit a parse tree produced by SkylineParser#sky.
