@@ -2,65 +2,60 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 from skyline import *
-
+import sys
+from antlr4 import *
+from SkylineLexer import SkylineLexer
+from SkylineParser import SkylineParser
+from SkylineVisitor import SkylineVisitor
+from EvalVisitor import EvalVisitor
 import os
 
 mySkylines = {}
+visitor = EvalVisitor(mySkylines)
 
 def start(update, context):
-    print (update.effective_chat)
-    print (context)
+    print(update.effective_chat)
+    print(context)
     username = update.effective_chat.first_name
     message = "SkylineBot!\nBenvinlgut " + username + "!"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
 
 def author(update, context):
     message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, rodrigo.arian.huapaya@est.fib.upc.edu"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
+
 def leeElTexto(update, context):
-    receivedMessage = update.message.text
+    message = update.message.text
 
-    if (mySkylines.__contains__(receivedMessage)):
+    sky = parse(message)
 
-        sky = mySkylines[receivedMessage]
-        
-        sendPhoto (sky, update, context)
-
-    elif (receivedMessage.find(":=") >= 0):
-
-        message = receivedMessage.split()
-        sky = createNewSkyline(message)
-
-        sendPhoto (sky, update, context)
+    sendPhoto(sky, update, context)
 
 
 def sendPhoto(skyline, update, context):
-    img = skyline.saveImage()
+    
     context.bot.send_photo(
-            chat_id=update.effective_chat.id,
-            photo=open(img, 'rb'))
-    os.remove(img)
+        chat_id=update.effective_chat.id,
+        photo=open(skyline, 'rb'))
+    os.remove(skyline)
 
-def createNewSkyline(message):
-    id = message[0]
-    op = message[2]
-    val = op[1:-1].split(",")
 
-    for i in range(0, len(val)): 
-        val[i] = int(val[i]) 
-
-    sky = Skyline(val[0], val[1], val[2])
-    img = sky.saveImage()
+def parse(message):
     
-    print(id +" "+ op)
-    print (val)
-    mySkylines[id] = sky
-    return sky
-    
+    code = InputStream(message)
+    lexer = SkylineLexer(code)
+    token_stream = CommonTokenStream(lexer)
+    parser = SkylineParser(token_stream)
+    tree = parser.root()
+
+    result = visitor.visit(tree)
+    return result
+
+
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
-
 
 
 # crea objectes per treballar amb Telegram

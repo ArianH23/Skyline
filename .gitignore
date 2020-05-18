@@ -1,9 +1,5 @@
 token.txt
 
-Skyline.interp
-Skyline.tokens
-SkylineLexer*
-SkylineP*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

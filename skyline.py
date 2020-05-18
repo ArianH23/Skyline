@@ -108,7 +108,7 @@ class Skyline:
         # # # # # self.xyints()
 
         # plt.show()
-        pathOfImage = "plotxd.png"
+        pathOfImage = "img.png"
         plt.savefig(pathOfImage)
         # self.color = plt.get_color()
         plt.clf()

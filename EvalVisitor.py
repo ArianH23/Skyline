@@ -16,18 +16,18 @@ class EvalVisitor(SkylineVisitor):
         ident = self.visit(ctx.ident())
 
         sky = self.visit(ctx.expr())
-        sky.saveImage()
         
         self.ts[ident] = sky
-
-        return sky
+        img = sky.saveImage()
+        return img
 
 
     def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
         id = self.visit(ctx.ident())
-
+        print ("error")
         if id in self.ts:
-            return self.ts.get(id)
+            sky = self.ts.get(id)
+            return sky
         
         else:
             return "Error"

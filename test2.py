@@ -20,4 +20,4 @@ while True:
     tree = parser.root()
 
    
-    visitor.visit(tree)
+    print(type(visitor.visit(tree)))
