@@ -285,26 +285,26 @@ class Skyline:
         # We don't want consecutive intervals with the same values to appear more than once.
 
 
-        flattenedIntervals = []
-        flattenedIntervals.append(intervals[0])
-        flattenedValues = []
+        # flattenedIntervals = []
+        # flattenedIntervals.append(intervals[0])
+        # flattenedValues = []
 
-        lastVal = values[0]
+        # lastVal = values[0]
 
-        for i in range(1, intervals.__len__()):
-            if i == intervals.__len__():
-                flattenedIntervals.append(intervals[i])
-                flattenedValues.append(lastVal)
+        # for i in range(1, intervals.__len__()):
+        #     if i == intervals.__len__():
+        #         flattenedIntervals.append(intervals[i])
+        #         flattenedValues.append(lastVal)
 
-            if values[i] != lastVal:
-                flattenedIntervals.append(intervals[i])
-                flattenedValues.append(lastVal)
+        #     if values[i] != lastVal:
+        #         flattenedIntervals.append(intervals[i])
+        #         flattenedValues.append(lastVal)
 
-                lastVal = values[i]
+        #         lastVal = values[i]
 
-        flattenedValues.append(0)
+        # flattenedValues.append(0)
         # input()
-        return flattenedIntervals, flattenedValues
+        return intervals, values
 
     def intersection(self, arr2, val2):
         index1 = 0
