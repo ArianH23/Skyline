@@ -3,36 +3,40 @@ import random
 from random import randint
 import time
 
+
 class Skyline:
 
     def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None):
 
         if type == "random":
             maxFinal = xmax-interval2
-            randomWidth = randint(1,interval2)
-            randomHeight = randint(1,heights)
-            randomXMin = randint(xmin,maxFinal)
-            firstSky = Skyline(randomXMin,randomHeight,randomXMin + randomWidth)
+            randomWidth = randint(1, interval2)
+            randomHeight = randint(1, heights)
+            randomXMin = randint(xmin, maxFinal)
+            firstSky = Skyline(randomXMin, randomHeight,
+                               randomXMin + randomWidth)
 
             # print (firstSky.intervalos)
             # print(firstSky.values)
-            for i in range (1,interval1):
+            for i in range(1, interval1):
                 # print(i)
                 # print("randoming")
-                randomHeight = randint(1,heights)
-                randomXMin = randint(xmin,maxFinal)
-                randomWidth = randint(1,interval2)
+                randomHeight = randint(0, heights)
+                randomXMin = randint(xmin, maxFinal)
+                randomWidth = randint(1, interval2)
                 # print(type(randomHeight))
                 # print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
-                newSky = Skyline(randomXMin,randomHeight,randomXMin + randomWidth)
-                firstSky = firstSky + newSky
+                if randomHeight > 0:
+                    newSky = Skyline(randomXMin, randomHeight,
+                                     randomXMin + randomWidth)
+                    firstSky = firstSky + newSky
                 # print(firstSky.values)
                 # # input()
                 # print (firstSky.intervalos)
                 # print(firstSky.values)
 
-            self.intervalos = firstSky.intervalos
-            self.values = firstSky.values
+            self.intervalos, self.values = flatten(
+                firstSky.intervalos, firstSky.values)
             self.color = firstSky.color
 
         else:
@@ -45,7 +49,8 @@ class Skyline:
                 self.values = [heights] + [0]
 
             if color == None:
-                self.color = (random.random(), random.random(), random.random())
+                self.color = (random.random(),
+                              random.random(), random.random())
             else:
                 self.color = color
 
@@ -164,12 +169,12 @@ class Skyline:
         plt.xticks(xint)
 
     def union(self, arr2, val2):
-        firsta = time.time()*100000000
+        # firsta = time.time()*100000000
         index1 = 0
         index2 = 0
         arr1 = self.intervalos
         val1 = self.values
-        seconda = time.time()*100000000
+        # seconda = time.time()*100000000
 
         # print("asig: " + str(seconda-firsta))
 
@@ -201,28 +206,28 @@ class Skyline:
         # print ("arr1[0]: " + str(arr1[0]))
         # print ("arr2[0]: " + str(arr2[0]))
 
-        first1 = time.time()*100000000
+        # first1 = time.time()*100000000
 
         # while arr1[index1] < arr2[index2] and index1!=arr1.__len__()-1:
         #     # print("we in")
         #     intervals.append(arr1[index1])
         #     values.append(val1[index1])
         #     index1 += 1
-        second1 = time.time()*100000000
+        # second1 = time.time()*100000000
         if index2 < arr2.__len__():
-            posLittleArr2inArr1 = bisect_left(arr1,arr2[index2])
+            posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
             # print(posLittleArr2inArr1)
             intervals.extend(arr1[index1:posLittleArr2inArr1])
             values.extend(val1[index1:posLittleArr2inArr1])
             index1 = posLittleArr2inArr1
 
         # print("bsearch: " + str(second1-first1))
-        first2 = time.time()*100000000
+        # first2 = time.time()*100000000
         # Iterating
         numite = 0
         while index1 < arr1.__len__() and index2 < arr2.__len__():
             # print("inside big loop")
-            firstn = time.time()*100000000
+            # firstn = time.time()*100000000
 
             if arr1[index1] > arr2[index2]:
                 intervals.append(arr2[index2])
@@ -253,7 +258,7 @@ class Skyline:
 
                 index1 += 1
                 index2 += 1
-            secondn = time.time()*100000000
+            # secondn = time.time()*100000000
             # print("tiempo ite: " + str(secondn-firstn))
             # print()
             numite += 1
@@ -264,7 +269,7 @@ class Skyline:
         # print()
         # print(intervals)
         # print(values)
-        first3 = time.time()*100000000
+        # first3 = time.time()*100000000
 
         if index1 != arr1.__len__():
             intervals.extend(arr1[index1:])
@@ -279,11 +284,9 @@ class Skyline:
         # second3 = time.time()*100000000
         # print("append: " + str(second3-first3))
 
-
         # For the intervals and values to look cleaner,
         # it is necessary some kind of flattening around the results.
         # We don't want consecutive intervals with the same values to appear more than once.
-
 
         # flattenedIntervals = []
         # flattenedIntervals.append(intervals[0])
@@ -364,24 +367,7 @@ class Skyline:
         if values.__len__() == intervals.__len__()-1:
             values.append(0)
 
-        flattenedIntervals = []
-        flattenedIntervals.append(intervals[0])
-        flattenedValues = []
-
-        lastVal = values[0]
-
-        for i in range(1, intervals.__len__()):
-            if i == intervals.__len__():
-                flattenedIntervals.append(intervals[i])
-                flattenedValues.append(lastVal)
-
-            if values[i] != lastVal:
-                flattenedIntervals.append(intervals[i])
-                flattenedValues.append(lastVal)
-
-                lastVal = values[i]
-
-        flattenedValues.append(0)
+        flattenedIntervals, flattenedValues = flatten(intervals, values)
 
         while flattenedValues[0] == 0:
             flattenedIntervals.pop(0)
@@ -389,14 +375,38 @@ class Skyline:
 
         return flattenedIntervals, flattenedValues
 
-def bisect_left(a, x, lo=0, hi=None):
-    if lo < 0:
-        raise ValueError('lo must be non-negative')
-    if hi is None:
-        hi = len(a)
-    while lo < hi:
-        mid = (lo+hi)//2
-        # Use __lt__ to match the logic in list.sort() and in heapq
-        if a[mid] < x: lo = mid+1
-        else: hi = mid
-    return lo
+
+def binary_search(list, val):
+    low = 0
+    high = len(list)
+    while low < high:
+        mid = (low+high)//2
+
+        if list[mid] < val:
+            low = mid+1
+        else:
+            high = mid
+    return low
+
+
+def flatten(intervals, values):
+    flattenedIntervals = []
+    flattenedIntervals.append(intervals[0])
+    flattenedValues = []
+
+    lastVal = values[0]
+
+    for i in range(1, intervals.__len__()):
+        if i == intervals.__len__():
+            flattenedIntervals.append(intervals[i])
+            flattenedValues.append(lastVal)
+
+        if values[i] != lastVal:
+            flattenedIntervals.append(intervals[i])
+            flattenedValues.append(lastVal)
+
+            lastVal = values[i]
+
+    flattenedValues.append(0)
+
+    return flattenedIntervals, flattenedValues
