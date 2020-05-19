@@ -17,7 +17,7 @@ class Skyline:
             # print (firstSky.intervalos)
             # print(firstSky.values)
             for i in range (1,interval1):
-                print(i)
+                # print(i)
                 # print("randoming")
                 randomHeight = randint(1,heights)
                 randomXMin = randint(xmin,maxFinal)
@@ -164,10 +164,14 @@ class Skyline:
         plt.xticks(xint)
 
     def union(self, arr2, val2):
+        firsta = time.time()*100000000
         index1 = 0
         index2 = 0
         arr1 = self.intervalos
         val1 = self.values
+        seconda = time.time()*100000000
+
+        # print("asig: " + str(seconda-firsta))
 
         intervals = []
         values = []
@@ -205,18 +209,21 @@ class Skyline:
         #     values.append(val1[index1])
         #     index1 += 1
         second1 = time.time()*100000000
-        posLittleArr2inArr1 = bisect_left(arr1,arr2[index2])
-        # print(posLittleArr2inArr1)
-        intervals.extend(arr1[index1:posLittleArr2inArr1])
-        values.extend(val1[index1:posLittleArr2inArr1])
-        index1 = posLittleArr2inArr1
+        if index2 < arr2.__len__():
+            posLittleArr2inArr1 = bisect_left(arr1,arr2[index2])
+            # print(posLittleArr2inArr1)
+            intervals.extend(arr1[index1:posLittleArr2inArr1])
+            values.extend(val1[index1:posLittleArr2inArr1])
+            index1 = posLittleArr2inArr1
 
-        print("bsearch: " + str(second1-first1))
+        # print("bsearch: " + str(second1-first1))
         first2 = time.time()*100000000
         # Iterating
         numite = 0
-        while index1 != arr1.__len__() and index2 != arr2.__len__():
+        while index1 < arr1.__len__() and index2 < arr2.__len__():
             # print("inside big loop")
+            firstn = time.time()*100000000
+
             if arr1[index1] > arr2[index2]:
                 intervals.append(arr2[index2])
                 if val1[index1 - 1] < val2[index2]:
@@ -224,7 +231,7 @@ class Skyline:
                     values.append(val2[index2])
                 else:
                     values.append(val1[index1-1])
-                index2 = index2 + 1
+                index2 += 1
 
             elif arr1[index1] < arr2[index2]:
 
@@ -237,20 +244,23 @@ class Skyline:
                 else:
                     values.append(val1[index1])
 
-                index1 = index1 + 1
+                index1 += 1
 
             elif arr1[index1] == arr2[index2]:
 
                 values.append(max(val1[index1], val2[index2]))
                 intervals.append(arr1[index1])
 
-                index1 = index1 + 1
-                index2 = index2 + 1
+                index1 += 1
+                index2 += 1
+            secondn = time.time()*100000000
+            # print("tiempo ite: " + str(secondn-firstn))
+            # print()
+            numite += 1
 
-            numite+=1
-        print("numero de ites: " + str(numite))
-        second2 = time.time()*100000000
-        print("bucle2: " + str(second2-first2))
+        # print("numero de ites: " + str(numite))
+        # second2 = time.time()*100000000
+        # print("bucle2: " + str(second2-first2))
         # print()
         # print(intervals)
         # print(values)
@@ -266,8 +276,8 @@ class Skyline:
 
         if values.__len__() == intervals.__len__()-1:
             values.append(0)
-        second3 = time.time()*100000000
-        print("append: " + str(second3-first3))
+        # second3 = time.time()*100000000
+        # print("append: " + str(second3-first3))
 
 
         # For the intervals and values to look cleaner,
