@@ -1,7 +1,7 @@
 default:
 	python3 bot.py
 antlrv	:
-	antlr4 -Dlanguage=Python3 -no-listener -visitor Skyline.g4
+	antlr4 -Dlanguage=Python3 -no-listener Skyline.g4
 
 clean	:
 	rm Skyline.interp

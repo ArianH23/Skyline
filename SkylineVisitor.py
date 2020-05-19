@@ -8,29 +8,28 @@ else:
 
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
 
+
 class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#root.
-    def visitRoot(self, ctx:SkylineParser.RootContext):
-        print("KAPPACHINO")
+    def visitRoot(self, ctx: SkylineParser.RootContext):
         res = self.visit(ctx.statement())
         return res
 
-
     # Visit a parse tree produced by SkylineParser#exprVal.
-    def visitExprVal(self, ctx:SkylineParser.ExprValContext):
+    def visitExprVal(self, ctx: SkylineParser.ExprValContext):
         res = self.visitChildren(ctx)
-        
+
         img = res.saveImage()
-        
+
         return img
 
-
     # Visit a parse tree produced by SkylineParser#unionOffset.
+
     def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
         sky = self.visit(ctx.expr(0))
         val = self.visit(ctx.expr(1))
-        
+
         if ctx.PLUS():
             ret = sky + val
             return ret
@@ -40,29 +39,29 @@ class SkylineVisitor(ParseTreeVisitor):
 
         return "Error"
 
-
     # Visit a parse tree produced by SkylineParser#mirror.
+
     def visitMirror(self, ctx: SkylineParser.MirrorContext):
         sky = self.visit(ctx.expr())
-        
-        if not isinstance(sky,Skyline):
+
+        if not isinstance(sky, Skyline):
             return "Error"
 
         return -sky
 
-
     # Visit a parse tree produced by SkylineParser#skylineValue.
+
     def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
-        print("why hello there")
+        # print("why hello there")
         return self.visitSkyCreation(ctx.skyCreation())
 
-
     # Visit a parse tree produced by SkylineParser#parenthesis.
+
     def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
         return self.visit(ctx.expr())
 
-
     # Visit a parse tree produced by SkylineParser#interRepli.
+
     def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
         sky = self.visit(ctx.expr(0))
         val = self.visit(ctx.expr(1))
@@ -70,47 +69,59 @@ class SkylineVisitor(ParseTreeVisitor):
         ret = sky * val
         return ret
 
-
     # Visit a parse tree produced by SkylineParser#integerVal.
+
     def visitIntegerVal(self, ctx: SkylineParser.IntegerValContext):
         value = int(ctx.INTVAL().getText())
         return value
 
-
     # Visit a parse tree produced by SkylineParser#ident.
+
     def visitIdent(self, ctx: SkylineParser.IdentContext):
         id = ctx.ID().getText()
         return id
 
-
     # Visit a parse tree produced by SkylineParser#skyCreation.
+
     def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
-        
-        if ctx.sky(0):
-            return self.visitSky(ctx.sky(0))
+        # Creacio de skyline compost
+        if ctx.LC():
 
-        if ctx.INTVAL(0):
-            print("we trying")
-            buildings = int(ctx.INTVAL(0).getText())
-            height =int(ctx.INTVAL(1).getText())
-            width = int(ctx.INTVAL(2).getText())
-            xmin = int(ctx.INTVAL(3).getText())
-            xmax =int(ctx.INTVAL(4).getText())
+            listOfSkylineValues = []
 
-            sky = Skyline(buildings,height,width,xmin,xmax,type="random")
+            for sky in ctx.sky():
+                listOfSkylineValues.append(int(sky.INTVAL(0).getText()))
+                listOfSkylineValues.append(int(sky.INTVAL(1).getText()))
+                listOfSkylineValues.append(int(sky.INTVAL(2).getText()))
+
+            sky = Skyline(listOfSkylineValues, 0, type="complex")
 
             return sky
 
+        # Creacio de Skyline simple
+        elif ctx.sky(0):
+            return self.visitSky(ctx.sky(0))
+
+        # Creacio de Skyline random
+        elif ctx.LB():
+            buildings = int(ctx.INTVAL(0).getText())
+            height = int(ctx.INTVAL(1).getText())
+            width = int(ctx.INTVAL(2).getText())
+            xmin = int(ctx.INTVAL(3).getText())
+            xmax = int(ctx.INTVAL(4).getText())
+
+            sky = Skyline(buildings, height, width, xmin, xmax, type="random")
+
+            return sky
 
     # Visit a parse tree produced by SkylineParser#sky.
+
     def visitSky(self, ctx: SkylineParser.SkyContext):
-        
+
         val0 = int(ctx.INTVAL(0).getText())
         val1 = int(ctx.INTVAL(1).getText())
         val2 = int(ctx.INTVAL(2).getText())
 
         return Skyline(val0, val1, val2)
-
-
 
 del SkylineParser

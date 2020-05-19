@@ -28,18 +28,16 @@ def author(update, context):
 
 def leeElTexto(update, context):
     message = update.message.text
-    print (message)
+    print(message)
 
     userId = str(update.message.from_user['id'])
-    print(type(userId))
-    pathOfDict = "Data/" + userId +".dict"
+    
+    pathOfDict = "Data/" + userId + ".dict"
     userData = {}
-    print(path.exists(pathOfDict))
 
     if path.exists(pathOfDict):
         pickle_in = open(pathOfDict, "rb")
         userData = pickle.load(pickle_in)
-        print(userData["a"])
         print(userData)
 
     sky = parse(message, userData, userId)
@@ -48,7 +46,7 @@ def leeElTexto(update, context):
 
 
 def sendPhoto(skyline, update, context):
-    
+
     context.bot.send_photo(
         chat_id=update.effective_chat.id,
         photo=open(skyline, 'rb'))
@@ -57,7 +55,7 @@ def sendPhoto(skyline, update, context):
 
 def parse(message, userData, userId):
     visitor = EvalVisitor(userData, userId)
-    print ("parsing")
+    print("parsing")
     code = InputStream(message)
 
     lexer = SkylineLexer(code)

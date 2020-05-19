@@ -39,6 +39,18 @@ class Skyline:
                 firstSky.intervalos, firstSky.values)
             self.color = firstSky.color
 
+        elif type == "complex":
+            firstSky = Skyline(interval1[0],interval1[1],interval1[2])
+
+            for i in range(1,len(interval1) // 3):
+                firstSky = firstSky + Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
+
+            self.intervalos, self.values = flatten(
+                firstSky.intervalos, firstSky.values)
+            
+            self.color = firstSky.color
+
+
         else:
             if interval2 is None:
                 self.intervalos = interval1
