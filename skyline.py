@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import random
 from random import randint
+import time
 
 class Skyline:
 
@@ -187,10 +188,35 @@ class Skyline:
                 arr1, arr2 = arr2, arr1
                 index1, index2 = index2, index1
                 val1, val2 = val2, val1
+        # print("im going")
+        # print(arr1)
+        # print(arr2)
+        # print()
+        # print(val1)
+        # print(val2)
+        # print ("arr1[0]: " + str(arr1[0]))
+        # print ("arr2[0]: " + str(arr2[0]))
 
+        first1 = time.time()*100000000
+
+        # while arr1[index1] < arr2[index2] and index1!=arr1.__len__()-1:
+        #     # print("we in")
+        #     intervals.append(arr1[index1])
+        #     values.append(val1[index1])
+        #     index1 += 1
+        second1 = time.time()*100000000
+        posLittleArr2inArr1 = bisect_left(arr1,arr2[index2])
+        # print(posLittleArr2inArr1)
+        intervals.extend(arr1[index1:posLittleArr2inArr1])
+        values.extend(val1[index1:posLittleArr2inArr1])
+        index1 = posLittleArr2inArr1
+
+        print("bsearch: " + str(second1-first1))
+        first2 = time.time()*100000000
         # Iterating
+        numite = 0
         while index1 != arr1.__len__() and index2 != arr2.__len__():
-
+            # print("inside big loop")
             if arr1[index1] > arr2[index2]:
                 intervals.append(arr2[index2])
                 if val1[index1 - 1] < val2[index2]:
@@ -221,16 +247,28 @@ class Skyline:
                 index1 = index1 + 1
                 index2 = index2 + 1
 
+            numite+=1
+        print("numero de ites: " + str(numite))
+        second2 = time.time()*100000000
+        print("bucle2: " + str(second2-first2))
+        # print()
+        # print(intervals)
+        # print(values)
+        first3 = time.time()*100000000
+
         if index1 != arr1.__len__():
-            intervals = intervals + arr1[index1:]
-            values = values + val1[index1:-1]
+            intervals.extend(arr1[index1:])
+            values.extend(val1[index1:-1])
 
         elif index2 != arr2.__len__():
-            intervals = intervals + arr2[index2:]
-            values = values + val2[index2:-1]
+            intervals.extend(arr2[index2:])
+            values.extend(val2[index2:-1])
 
         if values.__len__() == intervals.__len__()-1:
             values.append(0)
+        second3 = time.time()*100000000
+        print("append: " + str(second3-first3))
+
 
         # For the intervals and values to look cleaner,
         # it is necessary some kind of flattening around the results.
@@ -255,7 +293,7 @@ class Skyline:
                 lastVal = values[i]
 
         flattenedValues.append(0)
-
+        # input()
         return flattenedIntervals, flattenedValues
 
     def intersection(self, arr2, val2):
@@ -340,3 +378,15 @@ class Skyline:
             flattenedValues.pop(0)
 
         return flattenedIntervals, flattenedValues
+
+def bisect_left(a, x, lo=0, hi=None):
+    if lo < 0:
+        raise ValueError('lo must be non-negative')
+    if hi is None:
+        hi = len(a)
+    while lo < hi:
+        mid = (lo+hi)//2
+        # Use __lt__ to match the logic in list.sort() and in heapq
+        if a[mid] < x: lo = mid+1
+        else: hi = mid
+    return lo
