@@ -14,11 +14,59 @@ import pickle
 
 
 def start(update, context):
-    print(update.effective_chat)
-    print(context)
+
     username = update.effective_chat.first_name
     message = "SkylineBot!\nBenvingut " + username + "!"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+def save(update, context):
+    id = update.message.text.split()[1]
+    userId = str(update.message.from_user['id'])
+
+    userPath = "Data/" + userId
+
+    if path.exists(userPath):
+        pickle_in = open(userPath +"/data.dict", "rb")
+        userData = pickle.load(pickle_in)
+
+        if id in userData:
+            skyToSave = userData.get(id)
+
+            pickle_out = open(userPath + "/" + id + ".sky", "wb")
+            pickle.dump(skyToSave, pickle_out)
+            pickle_out.close()
+
+            message = "Skyline amb identificador " + id + " guardat correctament a disc!"
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+        else:
+            message = "El Skyline amb identificador " + id + " no existeix. Per tant encara no es pot començar a guardar res"
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+    else:
+        message = "Encara no s'ha començat a utilitzar el programa."
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+def lst(update, context):
+    userId = str(update.message.from_user['id'])
+
+    userPath = "Data/" + userId
+    if path.exists(userPath):
+
+        pickle_in = open(userPath +"/data.dict", "rb")
+        userData = pickle.load(pickle_in)
+
+        message = "Aquesta és la llista de identificadors que tens actualment:\n\n"
+        message += "IDs      Àrees\n"
+
+        for id, sky in userData.items():
+            message += " " + id +"          " + str(1) +"\n"
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+    else:
+        message = "Encara no s'ha començat a utilitzar el programa."
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 def author(update, context):
@@ -32,13 +80,16 @@ def leeElTexto(update, context):
 
     userId = str(update.message.from_user['id'])
     
-    pathOfDict = "Data/" + userId + ".dict"
+    pathOfUser = "Data/" + userId
     userData = {}
 
-    if path.exists(pathOfDict):
-        pickle_in = open(pathOfDict, "rb")
+    if path.exists(pathOfUser):
+        pickle_in = open(pathOfUser +"/data.dict", "rb")
         userData = pickle.load(pickle_in)
         print(userData)
+    
+    else:
+        os.mkdir(pathOfUser)
 
     sky = parse(message, userData, userId)
 
@@ -78,6 +129,8 @@ dp = updater.dispatcher
 # indica que quan el bot rebi la comanda /start o /author s'executi la funció start
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('author', author))
+dp.add_handler(CommandHandler('save', save))
+dp.add_handler(CommandHandler('lst', lst))
 
 dp.add_handler(MessageHandler(Filters.text, leeElTexto))
 

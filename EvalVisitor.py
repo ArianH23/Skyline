@@ -20,7 +20,7 @@ class EvalVisitor(SkylineVisitor):
         
         self.ts[ident] = sky
 
-        pickle_out = open("Data/" + self.id + ".dict", "wb")
+        pickle_out = open("Data/" + self.id + "/data.dict", "wb")
         pickle.dump(self.ts, pickle_out)
         pickle_out.close()
         

@@ -142,7 +142,7 @@ class Skyline:
 
         while i < rep:
             intervalsToAppend = [x + distance for x in intervalsToAppend]
-            finalIntervals = finalIntervals + intervalsToAppend
+            finalIntervals.extend(intervalsToAppend)
             i += 1
 
         valuesToReplicate = valuesToReplicate * rep
