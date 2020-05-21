@@ -49,7 +49,7 @@ def save(update, context):
                 chat_id=update.effective_chat.id, text=message)
 
     else:
-        message = "Encara no s'ha començat a utilitzar el programa."
+        message = "Encara no s'ha assignat cap variable."
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
 
@@ -64,10 +64,10 @@ def lst(update, context):
         userData = pickle.load(pickle_in)
 
         message = "Aquesta és la llista de identificadors que tens actualment:\n\n"
-        message += "<b>IDs      Àrees</b>\n"
 
         for id, sky in userData.items():
-            message += " " + id + "          " + str(1) + "\n"
+            message += "<i>ID:</i> " + id + " | <i>Àrea</i>: " + str(sky.get_area()) + " altura" + str(sky.get_height()) + "\n"
+            print(sky.area)
 
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)

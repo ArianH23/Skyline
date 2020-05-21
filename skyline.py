@@ -6,16 +6,19 @@ import time
 
 class Skyline:
 
-    def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None,calc_area = False):
+    def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None,asigna_atribs = True):
 
         if type == "random":
             maxFinal = xmax-interval2
+
             randomWidth = randint(1, interval2)
             randomHeight = randint(1, heights)
             randomXMin = randint(xmin, maxFinal)
+
             firstSky = Skyline(randomXMin, randomHeight,
                                randomXMin + randomWidth)
 
+            self.__height = randomHeight
             # print (firstSky.intervalos)
             # print(firstSky.values)
             for i in range(1, interval1):
@@ -28,8 +31,11 @@ class Skyline:
                 # print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
                 if randomHeight > 0:
                     newSky = Skyline(randomXMin, randomHeight,
-                                     randomXMin + randomWidth,calc_area=False)
+                                     randomXMin + randomWidth,asigna_atribs = False)
                     firstSky += newSky
+
+                    if randomHeight > self.__height:
+                        self.__height = randomHeight
                 # print(firstSky.values)
                 # # input()
                 # print (firstSky.intervalos)
@@ -42,9 +48,13 @@ class Skyline:
 
         elif type == "complex":
             firstSky = Skyline(interval1[0],interval1[1],interval1[2])
+            self.__height = interval1[1]
 
             for i in range(1,len(interval1) // 3):
-                firstSky = firstSky + Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
+                firstSky += Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
+                
+                if interval1[(i*3)+1] > self.__height:
+                    self.__height = interval1[(i*3)+1]
 
             self.intervalos, self.values = flatten(
                 firstSky.intervalos, firstSky.values)
@@ -67,8 +77,9 @@ class Skyline:
             else:
                 self.color = color
 
-            if calc_area == True:
+            if asigna_atribs == True:
                 self.area = self.__calculaArea(self.intervalos, self.values)
+                self.__height = max(self.values)
     
         # print(self.area)
     def __calculaArea(self, intervalos, values):
@@ -101,7 +112,7 @@ class Skyline:
             val2 = other.values
             intervalos, values = self.union(arr2, val2)
 
-            return Skyline(intervalos, values,calc_area=False)
+            return Skyline(intervalos, values,asigna_atribs=False)
 
 
     def __sub__(self, other):
@@ -411,7 +422,12 @@ class Skyline:
             flattenedValues.pop(0)
 
         return flattenedIntervals, flattenedValues
+    
+    def get_area(self):
+        return self.area
 
+    def get_height(self):
+        return self.__height
 
 def binary_search(list, val):
     low = 0
