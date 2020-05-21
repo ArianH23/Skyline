@@ -11,6 +11,7 @@ from EvalVisitor import EvalVisitor
 import os
 from os import path
 import pickle
+from telegram import ParseMode
 
 
 def start(update, context):
@@ -19,6 +20,7 @@ def start(update, context):
     message = "SkylineBot!\nBenvingut " + username + "!"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
+
 def save(update, context):
     id = update.message.text.split()[1]
     userId = str(update.message.from_user['id'])
@@ -26,7 +28,7 @@ def save(update, context):
     userPath = "Data/" + userId
 
     if path.exists(userPath):
-        pickle_in = open(userPath +"/data.dict", "rb")
+        pickle_in = open(userPath + "/data.dict", "rb")
         userData = pickle.load(pickle_in)
 
         if id in userData:
@@ -37,15 +39,20 @@ def save(update, context):
             pickle_out.close()
 
             message = "Skyline amb identificador " + id + " guardat correctament a disc!"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message)
 
         else:
-            message = "El Skyline amb identificador " + id + " no existeix. Per tant encara no es pot començar a guardar res"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+            message = "El Skyline amb identificador " + id + \
+                " no existeix. Per tant encara no es pot començar a guardar res"
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message)
 
     else:
         message = "Encara no s'ha començat a utilitzar el programa."
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
+
 
 def lst(update, context):
     userId = str(update.message.from_user['id'])
@@ -53,20 +60,22 @@ def lst(update, context):
     userPath = "Data/" + userId
     if path.exists(userPath):
 
-        pickle_in = open(userPath +"/data.dict", "rb")
+        pickle_in = open(userPath + "/data.dict", "rb")
         userData = pickle.load(pickle_in)
 
         message = "Aquesta és la llista de identificadors que tens actualment:\n\n"
-        message += "IDs      Àrees\n"
+        message += "<b>IDs      Àrees</b>\n"
 
         for id, sky in userData.items():
-            message += " " + id +"          " + str(1) +"\n"
+            message += " " + id + "          " + str(1) + "\n"
 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)
 
     else:
         message = "Encara no s'ha començat a utilitzar el programa."
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
 
 
 def author(update, context):
@@ -79,15 +88,15 @@ def leeElTexto(update, context):
     print(message)
 
     userId = str(update.message.from_user['id'])
-    
+
     pathOfUser = "Data/" + userId
     userData = {}
 
     if path.exists(pathOfUser):
-        pickle_in = open(pathOfUser +"/data.dict", "rb")
+        pickle_in = open(pathOfUser + "/data.dict", "rb")
         userData = pickle.load(pickle_in)
         print(userData)
-    
+
     else:
         os.mkdir(pathOfUser)
 
@@ -126,7 +135,8 @@ TOKEN = open('token.txt').read().strip()
 updater = Updater(token=TOKEN, use_context=True)
 dp = updater.dispatcher
 
-# indica que quan el bot rebi la comanda /start o /author s'executi la funció start
+# indica que quan el bot rebi la comanda /start, /author, /save,
+# /load, /lst, /clear s'executi la funció start
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('author', author))
 dp.add_handler(CommandHandler('save', save))

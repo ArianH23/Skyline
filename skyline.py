@@ -6,7 +6,7 @@ import time
 
 class Skyline:
 
-    def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None):
+    def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None,calc_area = False):
 
         if type == "random":
             maxFinal = xmax-interval2
@@ -28,8 +28,8 @@ class Skyline:
                 # print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
                 if randomHeight > 0:
                     newSky = Skyline(randomXMin, randomHeight,
-                                     randomXMin + randomWidth)
-                    firstSky = firstSky + newSky
+                                     randomXMin + randomWidth,calc_area=False)
+                    firstSky += newSky
                 # print(firstSky.values)
                 # # input()
                 # print (firstSky.intervalos)
@@ -38,6 +38,7 @@ class Skyline:
             self.intervalos, self.values = flatten(
                 firstSky.intervalos, firstSky.values)
             self.color = firstSky.color
+            self.area = self.__calculaArea(self.intervalos, self.values)
 
         elif type == "complex":
             firstSky = Skyline(interval1[0],interval1[1],interval1[2])
@@ -49,7 +50,7 @@ class Skyline:
                 firstSky.intervalos, firstSky.values)
             
             self.color = firstSky.color
-
+            self.area = self.__calculaArea(self.intervalos, self.values)
 
         else:
             if interval2 is None:
@@ -66,6 +67,21 @@ class Skyline:
             else:
                 self.color = color
 
+            if calc_area == True:
+                self.area = self.__calculaArea(self.intervalos, self.values)
+    
+        # print(self.area)
+    def __calculaArea(self, intervalos, values):
+        area = 0
+        
+        for i in range(1,len(intervalos)):
+            width = intervalos[i] - intervalos[i-1]
+            height = values[i-1]
+
+            area += width * height
+
+        return area
+
     def __add__(self, other):
         if isinstance(other, Skyline):
             arr2 = other.intervalos
@@ -78,6 +94,15 @@ class Skyline:
             intervalOff = self.moveOffset(other)
 
             return Skyline(intervalOff, self.values)
+
+    def __iadd__(self, other):
+        if isinstance(other, Skyline):
+            arr2 = other.intervalos
+            val2 = other.values
+            intervalos, values = self.union(arr2, val2)
+
+            return Skyline(intervalos, values,calc_area=False)
+
 
     def __sub__(self, other):
         if isinstance(other, int):
