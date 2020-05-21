@@ -14,15 +14,20 @@ class SkylineVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by SkylineParser#root.
     def visitRoot(self, ctx: SkylineParser.RootContext):
         res = self.visit(ctx.statement())
-        return res
+
+        img = res.saveImage()
+        height = res.get_height()
+        area = res.get_area()
+
+        return img,height,area
 
     # Visit a parse tree produced by SkylineParser#exprVal.
     def visitExprVal(self, ctx: SkylineParser.ExprValContext):
         res = self.visitChildren(ctx)
 
-        img = res.saveImage()
+        # img = res.saveImage()
 
-        return img
+        return res
 
     # Visit a parse tree produced by SkylineParser#unionOffset.
 

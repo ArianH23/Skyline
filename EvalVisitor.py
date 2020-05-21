@@ -1,6 +1,9 @@
 # Generated from Skyline.g by ANTLR 4.7.2
 from skyline import *
 from antlr4 import *
+from SkylineLexer import SkylineLexer
+from SkylineParser import SkylineParser
+from SkylineVisitor import SkylineVisitor
 from SkylineVisitor import *
 if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
@@ -24,9 +27,9 @@ class EvalVisitor(SkylineVisitor):
         pickle.dump(self.ts, pickle_out)
         pickle_out.close()
         
-        print(self.ts)
-        img = sky.saveImage()
-        return img
+        # print(self.ts)
+        # img = sky.saveImage()
+        return sky
 
 
     def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):

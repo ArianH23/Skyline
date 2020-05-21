@@ -4,10 +4,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from skyline import *
 import sys
 from antlr4 import *
-from SkylineLexer import SkylineLexer
-from SkylineParser import SkylineParser
-from SkylineVisitor import SkylineVisitor
-from EvalVisitor import EvalVisitor
+
+from EvalVisitor import *
 import os
 from os import path
 import pickle
@@ -66,7 +64,7 @@ def lst(update, context):
         message = "Aquesta és la llista de identificadors que tens actualment:\n\n"
 
         for id, sky in userData.items():
-            message += "<i>ID:</i> " + id + " | <i>Àrea</i>: " + str(sky.get_area()) + " altura" + str(sky.get_height()) + "\n"
+            message += "<i>ID:</i> " + id + " | <i>Àrea</i>: " + str(sky.get_area()) + "\n"
             print(sky.area)
 
         context.bot.send_message(
@@ -100,9 +98,13 @@ def leeElTexto(update, context):
     else:
         os.mkdir(pathOfUser)
 
-    sky = parse(message, userData, userId)
+    img, height, area = parse(message, userData, userId)
 
-    sendPhoto(sky, update, context)
+    sendPhoto(img, update, context)
+    message = "Àrea: " + str(area) + "\n"
+    message += "Alçada: " + str(height)
+
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 def sendPhoto(skyline, update, context):
@@ -123,8 +125,10 @@ def parse(message, userData, userId):
     parser = SkylineParser(token_stream)
     tree = parser.root()
 
-    img = visitor.visit(tree)
-    return img
+    img, height, area = visitor.visit(tree)
+    print("parsing done")
+
+    return img ,height, area
 
 
 # declara una constant amb el access token que llegeix de token.txt
