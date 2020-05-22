@@ -36,17 +36,17 @@ def save(update, context):
             pickle.dump(skyToSave, pickle_out)
             pickle_out.close()
 
-            message = "Skyline amb identificador \'" + id + "\' guardat correctament a disc!"
+            message = "Skyline amb ID: \'" + id + "\' guardat correctament a disc!"
             context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message)
 
         else:
-            message = "El Skyline amb identificador \'" + id +"\' no existeix en les teves dades."
+            message = "El Skyline amb identificador ID: \'" + id +"\' no existeix en les teves dades."
             context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message)
 
     else:
-        message = "Les teves dades estan buides actualment."
+        message = "Les teves dades estan buides actualment.\nPer tant el Skyline \'" + id + "\' no existeix."
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
 
@@ -146,7 +146,37 @@ def clean(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 def load(update, context):
-    pass
+    userId = str(update.message.from_user['id'])
+    id = update.message.text.split()[1]
+
+    pathOfUserData = "Data/" + userId + "/data.dict"
+    pathOfUserSky = "Data/" + userId + "/"+ id +".sky"
+
+    userData = {}
+
+    if path.exists(pathOfUserSky):
+        if path.exists(pathOfUserData):
+            pickle_in_data = open(pathOfUserData, "rb")
+            userData = pickle.load(pickle_in_data)
+        
+        pickle_in_sky = open(pathOfUserSky, "rb")
+        sky = pickle.load(pickle_in_sky)
+
+        userData[id] = sky
+
+        pickle_out = open(pathOfUserData, "wb")
+        pickle.dump(userData, pickle_out)
+        pickle_out.close()
+
+        os.remove(pathOfUserSky)
+        
+        message = "S'ha carregat correctament el Skyline amb ID: \'"+ id +"\' a les teves dades i s'ha esborrat de disc!" 
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    else:
+        message = "El Skyline amb ID: \'"+ id +"\' no existeix a disc." 
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
 
