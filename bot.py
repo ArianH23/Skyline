@@ -25,7 +25,7 @@ def save(update, context):
 
     userPath = "Data/" + userId
 
-    if path.exists(userPath):
+    if path.exists(userPath + "/data.dict"):
         pickle_in = open(userPath + "/data.dict", "rb")
         userData = pickle.load(pickle_in)
 
@@ -36,18 +36,17 @@ def save(update, context):
             pickle.dump(skyToSave, pickle_out)
             pickle_out.close()
 
-            message = "Skyline amb identificador " + id + " guardat correctament a disc!"
+            message = "Skyline amb identificador \'" + id + "\' guardat correctament a disc!"
             context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message)
 
         else:
-            message = "El Skyline amb identificador " + id + \
-                " no existeix. Per tant encara no es pot començar a guardar res"
+            message = "El Skyline amb identificador \'" + id +"\' no existeix en les teves dades."
             context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message)
 
     else:
-        message = "Encara no s'ha assignat cap variable."
+        message = "Les teves dades estan buides actualment."
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
 
@@ -56,7 +55,8 @@ def lst(update, context):
     userId = str(update.message.from_user['id'])
 
     userPath = "Data/" + userId
-    if path.exists(userPath):
+    print(path.exists(userPath))
+    if path.exists(userPath + "/data.dict"):
 
         pickle_in = open(userPath + "/data.dict", "rb")
         userData = pickle.load(pickle_in)
@@ -71,7 +71,7 @@ def lst(update, context):
             chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)
 
     else:
-        message = "Encara no s'ha començat a utilitzar el programa."
+        message = "No tens dades per mostrar."
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
 
@@ -91,9 +91,10 @@ def leeElTexto(update, context):
     userData = {}
 
     if path.exists(pathOfUser):
-        pickle_in = open(pathOfUser + "/data.dict", "rb")
-        userData = pickle.load(pickle_in)
-        print(userData)
+        if path.exists(pathOfUser + "/data.dict"):
+            pickle_in = open(pathOfUser + "/data.dict", "rb")
+            userData = pickle.load(pickle_in)
+            print(userData)
 
     else:
         os.mkdir(pathOfUser)
@@ -130,7 +131,22 @@ def parse(message, userData, userId):
 
     return img ,height, area
 
+def clean(update, context):
+    userId = str(update.message.from_user['id'])
 
+    pathOfUserData = "Data/" + userId + "/data.dict"
+
+    if path.exists(pathOfUserData):
+        os.remove(pathOfUserData)
+
+        message = "Les teves dades s'han esborrat correctament!"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    else:
+        message = "No tens dades a borrar"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+def load(update, context):
+    pass
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
 
@@ -145,6 +161,8 @@ dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('author', author))
 dp.add_handler(CommandHandler('save', save))
 dp.add_handler(CommandHandler('lst', lst))
+dp.add_handler(CommandHandler('clean', clean))
+dp.add_handler(CommandHandler('load', load))
 
 dp.add_handler(MessageHandler(Filters.text, leeElTexto))
 
