@@ -15,7 +15,7 @@ from telegram import ParseMode
 def start(update, context):
 
     username = update.effective_chat.first_name
-    message = "SkylineBot!\nBenvingut " + username + "!"
+    message = "SkylineBot!\nBenvingut " + username + "!\nEnvia /help per a obtenir la llista de comandes del bot."
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
@@ -188,10 +188,11 @@ dp = updater.dispatcher
 # indica que quan el bot rebi la comanda /start, /author, /save,
 # /load, /lst, /clear s'executi la funció start
 dp.add_handler(CommandHandler('start', start))
+dp.add_handler(CommandHandler('help', help))
 dp.add_handler(CommandHandler('author', author))
-dp.add_handler(CommandHandler('save', save))
 dp.add_handler(CommandHandler('lst', lst))
 dp.add_handler(CommandHandler('clean', clean))
+dp.add_handler(CommandHandler('save', save))
 dp.add_handler(CommandHandler('load', load))
 
 dp.add_handler(MessageHandler(Filters.text, leeElTexto))
