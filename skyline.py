@@ -80,6 +80,8 @@ class Skyline:
             if asigna_atribs == True:
                 self.area = self.__calculaArea(self.intervalos, self.values)
                 self.__height = max(self.values)
+                self.intervalos, self.values = flatten(
+                self.intervalos, self.values)
     
         # print(self.area)
     def __calculaArea(self, intervalos, values):
@@ -146,14 +148,14 @@ class Skyline:
 
         i = 1
 
-        while i < self.intervalos.__len__():
+        while i < len(self.intervalos):
             intervalsDistance.append(self.intervalos[i] - self.intervalos[i-1])
             i += 1
 
         lastValueInInterval = self.intervalos[0]
         finalIntervals = [lastValueInInterval]
 
-        i = intervalsDistance.__len__() - 1
+        i = len(intervalsDistance) - 1
 
         while i >= 0:
             lastValueInInterval += intervalsDistance[i]
@@ -219,7 +221,6 @@ class Skyline:
     def union(self, arr2, val2):
         # firsta = time.time()*100000000
         index1 = 0
-        index2 = 0
         arr1 = self.intervalos
         val1 = self.values
         # seconda = time.time()*100000000
@@ -229,21 +230,21 @@ class Skyline:
         intervals = []
         values = []
 
-        while index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
+        while index1 < len(arr1) and index1 < len(arr2) and arr1[index1] == arr2[index1]:
 
-            values.append(max(val1[index1], val2[index2]))
+            values.append(max(val1[index1], val2[index1]))
             intervals.append(arr1[index1])
 
-            index1 = index1 + 1
-            index2 = index2 + 1
+            index1 += 1
+            # index2 += 1
         # For the whole operation to work, the program has to take the
         # array with the first smallest value as a "reference" to check
         # the values of the other array, this conditional makes sure that
         # arr1 is the array which has the smallest first value
-        if index1 < arr1.__len__() and index2 < arr2.__len__():
-            if arr2[index2] < arr1[index1]:
+        if index1 < len(arr1) and index1 < len(arr2):
+            if arr2[index1] < arr1[index1]:
                 arr1, arr2 = arr2, arr1
-                index1, index2 = index2, index1
+                # index1, index2 = index2, index1
                 val1, val2 = val2, val1
         # print("im going")
         # print(arr1)
@@ -262,18 +263,30 @@ class Skyline:
         #     values.append(val1[index1])
         #     index1 += 1
         # second1 = time.time()*100000000
-        if index2 < arr2.__len__():
+        # print(arr1)
+        # print("val index2 antes " + str(index2))
+        index2 = index1
+
+        if index2 < len(arr2):
             posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
             # print(posLittleArr2inArr1)
-            intervals.extend(arr1[index1:posLittleArr2inArr1])
-            values.extend(val1[index1:posLittleArr2inArr1])
+            
+            #The smallest number of arr2 is bigger than the largest in arr1
+            if posLittleArr2inArr1 == len(arr1):
+                intervals.extend(arr1[index1:posLittleArr2inArr1-1])
+                values.extend(val1[index1:posLittleArr2inArr1-1])
+            #else
+            else:
+                intervals.extend(arr1[index1:posLittleArr2inArr1])
+                values.extend(val1[index1:posLittleArr2inArr1])
             index1 = posLittleArr2inArr1
-
+        # print("val index2 " + str(index2))
+        # input()
         # print("bsearch: " + str(second1-first1))
         # first2 = time.time()*100000000
         # Iterating
-        numite = 0
-        while index1 < arr1.__len__() and index2 < arr2.__len__():
+        # numite = 0
+        while index1 < len(arr1) and index2 < len(arr2):
             # print("inside big loop")
             # firstn = time.time()*100000000
 
@@ -309,8 +322,10 @@ class Skyline:
             # secondn = time.time()*100000000
             # print("tiempo ite: " + str(secondn-firstn))
             # print()
-            numite += 1
-
+            # numite += 1
+        # print(intervals)
+        # print(values)
+        # input()
         # print("numero de ites: " + str(numite))
         # second2 = time.time()*100000000
         # print("bucle2: " + str(second2-first2))
@@ -319,42 +334,17 @@ class Skyline:
         # print(values)
         # first3 = time.time()*100000000
 
-        if index1 != arr1.__len__():
+        if index1 != len(arr1):
             intervals.extend(arr1[index1:])
             values.extend(val1[index1:-1])
 
-        elif index2 != arr2.__len__():
+        elif index2 != len(arr2):
             intervals.extend(arr2[index2:])
             values.extend(val2[index2:-1])
 
-        if values.__len__() == intervals.__len__()-1:
+        if len(values) == len(intervals)-1:
             values.append(0)
-        # second3 = time.time()*100000000
-        # print("append: " + str(second3-first3))
 
-        # For the intervals and values to look cleaner,
-        # it is necessary some kind of flattening around the results.
-        # We don't want consecutive intervals with the same values to appear more than once.
-
-        # flattenedIntervals = []
-        # flattenedIntervals.append(intervals[0])
-        # flattenedValues = []
-
-        # lastVal = values[0]
-
-        # for i in range(1, intervals.__len__()):
-        #     if i == intervals.__len__():
-        #         flattenedIntervals.append(intervals[i])
-        #         flattenedValues.append(lastVal)
-
-        #     if values[i] != lastVal:
-        #         flattenedIntervals.append(intervals[i])
-        #         flattenedValues.append(lastVal)
-
-        #         lastVal = values[i]
-
-        # flattenedValues.append(0)
-        # input()
         return intervals, values
 
     def intersection(self, arr2, val2):
@@ -366,7 +356,7 @@ class Skyline:
         intervals = []
         values = []
 
-        while index1 < arr1.__len__() and index2 < arr2.__len__() and arr1[index1] == arr2[index2]:
+        while index1 < len(arr1) and index2 < len(arr2) and arr1[index1] == arr2[index2]:
 
             values.append(min(val1[index1], val2[index2]))
             intervals.append(arr1[index1])
@@ -374,13 +364,13 @@ class Skyline:
             index1 = index1 + 1
             index2 = index2 + 1
 
-        if index1 < arr1.__len__() and index2 < arr2.__len__():
+        if index1 < len(arr1) and index2 < len(arr2):
             if arr2[index2] < arr1[index1]:
                 arr1, arr2 = arr2, arr1
                 index1, index2 = index2, index1
                 val1, val2 = val2, val1
 
-        while index1 != arr1.__len__() and index2 != arr2.__len__():
+        while index1 != len(arr1) and index2 != len(arr2):
 
             if arr1[index1] > arr2[index2]:
                 intervals.append(arr2[index2])
@@ -412,7 +402,7 @@ class Skyline:
                 index1 = index1 + 1
                 index2 = index2 + 1
 
-        if values.__len__() == intervals.__len__()-1:
+        if len(values) == len(intervals)-1:
             values.append(0)
 
         flattenedIntervals, flattenedValues = flatten(intervals, values)
@@ -449,8 +439,8 @@ def flatten(intervals, values):
 
     lastVal = values[0]
 
-    for i in range(1, intervals.__len__()):
-        if i == intervals.__len__():
+    for i in range(1, len(intervals)):
+        if i == len(intervals):
             flattenedIntervals.append(intervals[i])
             flattenedValues.append(lastVal)
 
