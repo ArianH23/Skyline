@@ -15,56 +15,44 @@ from telegram import ParseMode
 def start(update, context):
 
     username = update.effective_chat.first_name
-    message = "SkylineBot!\nBenvingut " + username + "!\nEnvia /help per a obtenir la llista de comandes del bot."
+    message = "SkylineBot!\nBenvingut " + username + \
+        "!\nEnvia /help per a obtenir el llistat de comandes del bot."
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
-def save(update, context):
-    id = update.message.text.split()[1]
-    userId = str(update.message.from_user['id'])
+def help(update, context):
+    message = "A continuació tens un llistat de les comandes que es poden executar en aquest bot:\n\n"
+    message += "/start: Es mostrarà el missatge inicial del bot.\n\n"
+    message += "/help: Es mostrarà aquest missage un altre cop en el que pots trobar informació sobre les comandes del bot.\n\n"
+    message += "/author: Es mostrarà el nom complet i el correu de qui ha fet aquest bot.\n\n"
+    message += "/lst: Es mostrarà els identificadors dels Skylines que tinguis definits en aquell moment.\n\n"
+    message += "/clean: Es borraran tots els identificadors dels Skylines que tinguis definits en aquell moment.\n\n"
+    message += "/save id: Es guardarà el Skyline que tinguis definit amb l'identificador 'id'.\n\n"
+    message += "/load id: Es carregarà el Skyline que tinguis a disc amb l'identificador 'id'.\n\n"
 
-    userPath = "Data/" + userId
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
-    if path.exists(userPath + "/data.dict"):
-        pickle_in = open(userPath + "/data.dict", "rb")
-        userData = pickle.load(pickle_in)
 
-        if id in userData:
-            skyToSave = userData.get(id)
-
-            pickle_out = open(userPath + "/" + id + ".sky", "wb")
-            pickle.dump(skyToSave, pickle_out)
-            pickle_out.close()
-
-            message = "Skyline amb ID: \'" + id + "\' guardat correctament a disc!"
-            context.bot.send_message(
-                chat_id=update.effective_chat.id, text=message)
-
-        else:
-            message = "El Skyline amb identificador ID: \'" + id +"\' no existeix en les teves dades."
-            context.bot.send_message(
-                chat_id=update.effective_chat.id, text=message)
-
-    else:
-        message = "Les teves dades estan buides actualment.\nPer tant el Skyline \'" + id + "\' no existeix."
-        context.bot.send_message(
-            chat_id=update.effective_chat.id, text=message)
+def author(update, context):
+    message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, rodrigo.arian.huapaya@est.fib.upc.edu"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 def lst(update, context):
     userId = str(update.message.from_user['id'])
 
-    userPath = "Data/" + userId
-    print(path.exists(userPath))
-    if path.exists(userPath + "/data.dict"):
-
-        pickle_in = open(userPath + "/data.dict", "rb")
+    pathOfUserData = "Data/" + userId + "/data.dict"
+    print("xdxd")
+    if path.exists(pathOfUserData):
+        print("hi")
+        pickle_in = open(pathOfUserData , "rb")
         userData = pickle.load(pickle_in)
-
+        print(userData)
         message = "Aquesta és la llista de identificadors que tens actualment:\n\n"
 
         for id, sky in userData.items():
-            message += "<i>ID:</i> " + id + " | <i>Àrea</i>: " + str(sky.get_area()) + "\n"
+            message += "<i>ID:</i> " + id + \
+                " | <i>Àrea</i>: " + str(sky.get_area()) + "\n"
             print(sky.area)
 
         context.bot.send_message(
@@ -76,9 +64,92 @@ def lst(update, context):
             chat_id=update.effective_chat.id, text=message)
 
 
-def author(update, context):
-    message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, rodrigo.arian.huapaya@est.fib.upc.edu"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+def clean(update, context):
+    userId = str(update.message.from_user['id'])
+
+    pathOfUserData = "Data/" + userId + "/data.dict"
+
+    if path.exists(pathOfUserData):
+        os.remove(pathOfUserData)
+
+        message = "Les teves dades s'han esborrat correctament!"
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
+    else:
+        message = "No tens dades a borrar"
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
+
+
+def save(update, context):
+    userId = str(update.message.from_user['id'])
+    skyId = update.message.text.split()[1]
+
+    pathOfUserData = "Data/" + userId + "/data.dict"
+    pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
+
+    if path.exists(pathOfUserData):
+        pickle_in_data = open(pathOfUserData, "rb")
+        userData = pickle.load(pickle_in_data)
+
+        if skyId in userData:
+            skyToSave = userData.get(skyId)
+
+            pickle_out_sky = open(pathOfUserSky, "wb")
+            pickle.dump(skyToSave, pickle_out_sky)
+            pickle_out_sky.close()
+
+            message = "Skyline amb ID: \'" + skyId + "\' guardat correctament a disc!"
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message)
+
+        else:
+            message = "El Skyline amb identificador ID: \'" + \
+                skyId + "\' no existeix en les teves dades."
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message)
+
+    else:
+        message = "Les teves dades estan buides actualment.\nPer tant el Skyline \'" + \
+            skyId + "\' no existeix."
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
+
+
+def load(update, context):
+    userId = str(update.message.from_user['id'])
+    skyId = update.message.text.split()[1]
+
+    pathOfUserData = "Data/" + userId + "/data.dict"
+    pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
+
+    userData = {}
+
+    if path.exists(pathOfUserSky):
+
+        if path.exists(pathOfUserData):
+            pickle_in_data = open(pathOfUserData, "rb")
+            userData = pickle.load(pickle_in_data)
+
+        pickle_in_sky = open(pathOfUserSky, "rb")
+        sky = pickle.load(pickle_in_sky)
+
+        userData[skyId] = sky
+
+        pickle_out = open(pathOfUserData, "wb")
+        pickle.dump(userData, pickle_out)
+        pickle_out.close()
+
+        os.remove(pathOfUserSky)
+
+        message = "S'ha carregat correctament el Skyline amb ID: \'" + \
+            skyId + "\' a les teves dades i s'ha esborrat de disc!"
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
+    else:
+        message = "El Skyline amb ID: \'" + skyId + "\' no existeix a disc."
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
 
 
 def leeElTexto(update, context):
@@ -88,11 +159,13 @@ def leeElTexto(update, context):
     userId = str(update.message.from_user['id'])
 
     pathOfUser = "Data/" + userId
+    pathOfUserData = "Data/" + userId + "/data.dict"
+
     userData = {}
 
     if path.exists(pathOfUser):
-        if path.exists(pathOfUser + "/data.dict"):
-            pickle_in = open(pathOfUser + "/data.dict", "rb")
+        if path.exists(pathOfUserData):
+            pickle_in = open(pathOfUserData, "rb")
             userData = pickle.load(pickle_in)
             print(userData)
 
@@ -129,52 +202,8 @@ def parse(message, userData, userId):
     img, height, area = visitor.visit(tree)
     print("parsing done")
 
-    return img ,height, area
+    return img, height, area
 
-def clean(update, context):
-    userId = str(update.message.from_user['id'])
-
-    pathOfUserData = "Data/" + userId + "/data.dict"
-
-    if path.exists(pathOfUserData):
-        os.remove(pathOfUserData)
-
-        message = "Les teves dades s'han esborrat correctament!"
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-    else:
-        message = "No tens dades a borrar"
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-def load(update, context):
-    userId = str(update.message.from_user['id'])
-    id = update.message.text.split()[1]
-
-    pathOfUserData = "Data/" + userId + "/data.dict"
-    pathOfUserSky = "Data/" + userId + "/"+ id +".sky"
-
-    userData = {}
-
-    if path.exists(pathOfUserSky):
-        if path.exists(pathOfUserData):
-            pickle_in_data = open(pathOfUserData, "rb")
-            userData = pickle.load(pickle_in_data)
-        
-        pickle_in_sky = open(pathOfUserSky, "rb")
-        sky = pickle.load(pickle_in_sky)
-
-        userData[id] = sky
-
-        pickle_out = open(pathOfUserData, "wb")
-        pickle.dump(userData, pickle_out)
-        pickle_out.close()
-
-        os.remove(pathOfUserSky)
-        
-        message = "S'ha carregat correctament el Skyline amb ID: \'"+ id +"\' a les teves dades i s'ha esborrat de disc!" 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-    else:
-        message = "El Skyline amb ID: \'"+ id +"\' no existeix a disc." 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 # declara una constant amb el access token que llegeix de token.txt
@@ -185,8 +214,8 @@ TOKEN = open('token.txt').read().strip()
 updater = Updater(token=TOKEN, use_context=True)
 dp = updater.dispatcher
 
-# indica que quan el bot rebi la comanda /start, /author, /save,
-# /load, /lst, /clear s'executi la funció start
+# indica que quan el bot rebi la comanda /start, /help, /author,
+# /lst, /lst, /clean, /save o /load s'executi la funció start
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('help', help))
 dp.add_handler(CommandHandler('author', author))
