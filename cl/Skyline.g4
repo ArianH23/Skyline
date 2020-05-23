@@ -1,48 +1,53 @@
 grammar Skyline;
 
+root: statement EOF;
 
-root : statement EOF ;
+statement: ident ASSIGN expr                            # assignment 
 
-statement:  ident ASSIGN expr                       # assignment
+        | expr                                          # exprValue;
 
-           | expr                                   # exprVal
-           ;
+expr:
+	LP expr RP					# parenthesis
 
+	| MINUS expr				        # mirror
 
-expr    : LP expr RP                                # parenthesis
+	| expr MULT expr			        # interRepli
 
-        | MINUS expr                                # mirror
+	| expr (PLUS | MINUS) expr	                # unionOffset
 
-        | expr MULT expr                            # interRepli
+	| skyCreation				        # skylineValue
 
-        | expr (PLUS|MINUS) expr                    # unionOffset
+	| integerValue					# newIntegerValue
 
-        | skyCreation                               # skylineValue
-        
-        | INTVAL                                    # integerVal
-
-        | ident                                     # exprIdent
+	| ident						# exprIdent
         ;
 
-ident   : ID
+ident: ID;
+
+skyCreation: 	sky                                                                                     //Simple
+		| LB sky (',' sky)* RB                                                                  //Compost
+		| LC integerValue COMMA integerValue COMMA integerValue COMMA integerValue COMMA integerValue RC       //Random
+	; 
+
+sky: (LP integerValue COMMA integerValue COMMA integerValue RP);
+
+integerValue: '-' INTVAL                                # negIntegerValue
+
+        | INTVAL                                        # posIntegerValue
+
         ;
 
-skyCreation : (sky | LB sky (',' sky)* RB | LC INTVAL COMMA INTVAL COMMA INTVAL COMMA INTVAL COMMA INTVAL RC);                       //Simple, compost, random
-
-sky: (LP INTVAL COMMA INTVAL COMMA INTVAL RP);
-
-
-LC        : '{';      
-RC        : '}';
-COMMA     : ',';
-ASSIGN    : ':=';
-PLUS      : '+';
-MULT      : '*';
-MINUS     : '-';
-LP        : '(';
-RP        : ')';
-LB        : '[';
-RB        : ']';
-INTVAL    : '-'? [0-9]+ ;
-ID        : [a-z] [a-zA-Z0-9]* ;
-WS        : ' ' -> skip ;
+LC: '{';
+RC: '}';
+COMMA: ',';
+ASSIGN: ':=';
+PLUS: '+';
+MULT: '*';
+MINUS: '-';
+LP: '(';
+RP: ')';
+LB: '[';
+RB: ']';
+INTVAL: [0-9]+;
+ID: [a-z] [a-zA-Z0-9]*;
+WS: ' ' -> skip;

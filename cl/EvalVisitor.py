@@ -45,10 +45,9 @@ class EvalVisitor(SkylineVisitor):
         # img = sky.saveImage()
         return sky
 
-    def visitExprVal(self, ctx: SkylineParser.ExprValContext):
+    def visitExprValue(self, ctx: SkylineParser.ExprValueContext):
         res = self.visitChildren(ctx)
 
-        # img = res.saveImage()
 
         return res
 
@@ -70,9 +69,9 @@ class EvalVisitor(SkylineVisitor):
             listOfSkylineValues = []
 
             for sky in ctx.sky():
-                listOfSkylineValues.append(int(sky.INTVAL(0).getText()))
-                listOfSkylineValues.append(int(sky.INTVAL(1).getText()))
-                listOfSkylineValues.append(int(sky.INTVAL(2).getText()))
+                listOfSkylineValues.append(int(sky.integerValue(0).getText()))
+                listOfSkylineValues.append(int(sky.integerValue(1).getText()))
+                listOfSkylineValues.append(int(sky.integerValue(2).getText()))
 
             sky = Skyline(listOfSkylineValues, 0, type="complex")
 
@@ -84,12 +83,12 @@ class EvalVisitor(SkylineVisitor):
 
         # Creacio de Skyline random
         elif ctx.LC():
-            buildings = int(ctx.INTVAL(0).getText())
-            height = int(ctx.INTVAL(1).getText())
-            width = int(ctx.INTVAL(2).getText())
-            xmin = int(ctx.INTVAL(3).getText())
-            xmax = int(ctx.INTVAL(4).getText())
-
+            buildings = self.visit(ctx.integerValue(0))
+            height = self.visit(ctx.integerValue(1))
+            width = self.visit(ctx.integerValue(2))
+            xmin = self.visit(ctx.integerValue(3))
+            xmax = self.visit(ctx.integerValue(4))
+            
             sky = Skyline(buildings, height, width, xmin, xmax, type="random")
 
             return sky
@@ -97,10 +96,9 @@ class EvalVisitor(SkylineVisitor):
     # Visit a parse tree produced by SkylineParser#sky.
 
     def visitSky(self, ctx: SkylineParser.SkyContext):
-
-        val0 = int(ctx.INTVAL(0).getText())
-        val1 = int(ctx.INTVAL(1).getText())
-        val2 = int(ctx.INTVAL(2).getText())
+        val0 = self.visit(ctx.integerValue(0))
+        val1 = self.visit(ctx.integerValue(1))
+        val2 = self.visit(ctx.integerValue(2))
 
         return Skyline(val0, val1, val2)
 
@@ -124,12 +122,20 @@ class EvalVisitor(SkylineVisitor):
 
     # Visit a parse tree produced by SkylineParser#integerVal.
 
-    def visitIntegerVal(self, ctx: SkylineParser.IntegerValContext):
+    def visitPosIntegerValue(self, ctx: SkylineParser.PosIntegerValueContext):
         value = int(ctx.INTVAL().getText())
-        print("an int")
+
         return value
 
+    # Visit a parse tree produced by SkylineParser#negIntegerValue.
+    def visitNegIntegerValue(self, ctx:SkylineParser.NegIntegerValueContext):
+        value = int(ctx.INTVAL().getText())
+
+        return -value
+
+
     def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
+
         sky = self.visit(ctx.expr(0))
         val = self.visit(ctx.expr(1))
         
