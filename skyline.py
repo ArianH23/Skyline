@@ -72,8 +72,12 @@ class Skyline:
                 self.values = [heights] + [0]
 
             if color == None:
-                self.color = (random.random(),
-                              random.random(), random.random())
+                # Avoid creating a white Skyline which would not be seen.
+                red = min(0.85, random.random())
+                green = min(0.85, random.random())
+                blue = min(0.85, random.random())
+
+                self.color = (red,green,blue)
             else:
                 self.color = color
 
