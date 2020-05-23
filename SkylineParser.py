@@ -8,7 +8,7 @@ import sys
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20")
         buf.write("S\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2")
         buf.write("\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3\27\n\3\3\4\3\4\3\4\3")
         buf.write("\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4#\n\4\3\4\3\4\3\4\3\4\3")
@@ -51,9 +51,9 @@ class SkylineParser ( Parser ):
     literalNames = [ "<INVALID>", "'{'", "'}'", "','", "':='", "'+'", "'*'", 
                      "'-'", "'('", "')'", "'['", "']'" ]
 
-    symbolicNames = [ "<INVALID>", "LB", "RB", "COMMA", "ASSIGN", "PLUS", 
-                      "MULT", "MINUS", "LP", "RP", "LC", "RC", "INTVAL", 
-                      "ID" ]
+    symbolicNames = [ "<INVALID>", "LC", "RC", "COMMA", "ASSIGN", "PLUS", 
+                      "MULT", "MINUS", "LP", "RP", "LB", "RB", "INTVAL", 
+                      "ID", "WS" ]
 
     RULE_root = 0
     RULE_statement = 1
@@ -66,8 +66,8 @@ class SkylineParser ( Parser ):
                    "sky" ]
 
     EOF = Token.EOF
-    LB=1
-    RB=2
+    LC=1
+    RC=2
     COMMA=3
     ASSIGN=4
     PLUS=5
@@ -75,10 +75,11 @@ class SkylineParser ( Parser ):
     MINUS=7
     LP=8
     RP=9
-    LC=10
-    RC=11
+    LB=10
+    RB=11
     INTVAL=12
     ID=13
+    WS=14
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -546,14 +547,14 @@ class SkylineParser ( Parser ):
                 return self.getTypedRuleContext(SkylineParser.SkyContext,i)
 
 
-        def LC(self):
-            return self.getToken(SkylineParser.LC, 0)
-
-        def RC(self):
-            return self.getToken(SkylineParser.RC, 0)
-
         def LB(self):
             return self.getToken(SkylineParser.LB, 0)
+
+        def RB(self):
+            return self.getToken(SkylineParser.RB, 0)
+
+        def LC(self):
+            return self.getToken(SkylineParser.LC, 0)
 
         def INTVAL(self, i:int=None):
             if i is None:
@@ -567,8 +568,8 @@ class SkylineParser ( Parser ):
             else:
                 return self.getToken(SkylineParser.COMMA, i)
 
-        def RB(self):
-            return self.getToken(SkylineParser.RB, 0)
+        def RC(self):
+            return self.getToken(SkylineParser.RC, 0)
 
         def getRuleIndex(self):
             return SkylineParser.RULE_skyCreation
@@ -596,9 +597,9 @@ class SkylineParser ( Parser ):
                 self.state = 47
                 self.sky()
                 pass
-            elif token in [SkylineParser.LC]:
+            elif token in [SkylineParser.LB]:
                 self.state = 48
-                self.match(SkylineParser.LC)
+                self.match(SkylineParser.LB)
                 self.state = 49
                 self.sky()
                 self.state = 54
@@ -614,11 +615,11 @@ class SkylineParser ( Parser ):
                     _la = self._input.LA(1)
 
                 self.state = 57
-                self.match(SkylineParser.RC)
+                self.match(SkylineParser.RB)
                 pass
-            elif token in [SkylineParser.LB]:
+            elif token in [SkylineParser.LC]:
                 self.state = 59
-                self.match(SkylineParser.LB)
+                self.match(SkylineParser.LC)
                 self.state = 60
                 self.match(SkylineParser.INTVAL)
                 self.state = 61
@@ -638,7 +639,7 @@ class SkylineParser ( Parser ):
                 self.state = 68
                 self.match(SkylineParser.INTVAL)
                 self.state = 69
-                self.match(SkylineParser.RB)
+                self.match(SkylineParser.RC)
                 pass
             else:
                 raise NoViableAltException(self)

@@ -1,4 +1,4 @@
-// Generated from /home/arian/Uni/LP/BotTelegram/Skyline2/Skyline/Skyline.g4 by ANTLR 4.7.1
+// Generated from /home/arian/Uni/LP/BotTelegram/Skyline/Skyline.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -16,8 +16,8 @@ public class SkylineParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		LB=1, RB=2, COMMA=3, ASSIGN=4, PLUS=5, MULT=6, MINUS=7, LP=8, RP=9, LC=10, 
-		RC=11, INTVAL=12, ID=13;
+		LC=1, RC=2, COMMA=3, ASSIGN=4, PLUS=5, MULT=6, MINUS=7, LP=8, RP=9, LB=10, 
+		RB=11, INTVAL=12, ID=13, WS=14;
 	public static final int
 		RULE_root = 0, RULE_statement = 1, RULE_expr = 2, RULE_ident = 3, RULE_skyCreation = 4, 
 		RULE_sky = 5;
@@ -30,8 +30,8 @@ public class SkylineParser extends Parser {
 		"'['", "']'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "LB", "RB", "COMMA", "ASSIGN", "PLUS", "MULT", "MINUS", "LP", "RP", 
-		"LC", "RC", "INTVAL", "ID"
+		null, "LC", "RC", "COMMA", "ASSIGN", "PLUS", "MULT", "MINUS", "LP", "RP", 
+		"LB", "RB", "INTVAL", "ID", "WS"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -420,9 +420,9 @@ public class SkylineParser extends Parser {
 		public SkyContext sky(int i) {
 			return getRuleContext(SkyContext.class,i);
 		}
-		public TerminalNode LC() { return getToken(SkylineParser.LC, 0); }
-		public TerminalNode RC() { return getToken(SkylineParser.RC, 0); }
 		public TerminalNode LB() { return getToken(SkylineParser.LB, 0); }
+		public TerminalNode RB() { return getToken(SkylineParser.RB, 0); }
+		public TerminalNode LC() { return getToken(SkylineParser.LC, 0); }
 		public List<TerminalNode> INTVAL() { return getTokens(SkylineParser.INTVAL); }
 		public TerminalNode INTVAL(int i) {
 			return getToken(SkylineParser.INTVAL, i);
@@ -431,7 +431,7 @@ public class SkylineParser extends Parser {
 		public TerminalNode COMMA(int i) {
 			return getToken(SkylineParser.COMMA, i);
 		}
-		public TerminalNode RB() { return getToken(SkylineParser.RB, 0); }
+		public TerminalNode RC() { return getToken(SkylineParser.RC, 0); }
 		public SkyCreationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -454,10 +454,10 @@ public class SkylineParser extends Parser {
 				sky();
 				}
 				break;
-			case LC:
+			case LB:
 				{
 				setState(48);
-				match(LC);
+				match(LB);
 				setState(49);
 				sky();
 				setState(54);
@@ -477,13 +477,13 @@ public class SkylineParser extends Parser {
 					_la = _input.LA(1);
 				}
 				setState(57);
-				match(RC);
+				match(RB);
 				}
 				break;
-			case LB:
+			case LC:
 				{
 				setState(59);
-				match(LB);
+				match(LC);
 				setState(60);
 				match(INTVAL);
 				setState(61);
@@ -503,7 +503,7 @@ public class SkylineParser extends Parser {
 				setState(68);
 				match(INTVAL);
 				setState(69);
-				match(RB);
+				match(RC);
 				}
 				break;
 			default:
@@ -592,7 +592,7 @@ public class SkylineParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17S\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20S\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3"+
 		"\27\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4#\n\4\3\4\3\4\3\4\3"+
 		"\4\3\4\3\4\7\4+\n\4\f\4\16\4.\13\4\3\5\3\5\3\6\3\6\3\6\3\6\3\6\7\6\67"+

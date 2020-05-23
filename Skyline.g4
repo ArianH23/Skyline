@@ -27,13 +27,13 @@ expr    : LP expr RP                                # parenthesis
 ident   : ID
         ;
 
-skyCreation : (sky | LC sky (',' sky)* RC | LB INTVAL COMMA INTVAL COMMA INTVAL COMMA INTVAL COMMA INTVAL RB);                       //Simple, compost, random
+skyCreation : (sky | LB sky (',' sky)* RB | LC INTVAL COMMA INTVAL COMMA INTVAL COMMA INTVAL COMMA INTVAL RC);                       //Simple, compost, random
 
 sky: (LP INTVAL COMMA INTVAL COMMA INTVAL RP);
 
 
-LB        : '{';      
-RB        : '}';
+LC        : '{';      
+RC        : '}';
 COMMA     : ',';
 ASSIGN    : ':=';
 PLUS      : '+';
@@ -41,7 +41,8 @@ MULT      : '*';
 MINUS     : '-';
 LP        : '(';
 RP        : ')';
-LC        : '[';
-RC        : ']';
+LB        : '[';
+RB        : ']';
 INTVAL    : ('-')?('0'..'9')+ ;
 ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
+WS        : (' ')+ -> skip ;
