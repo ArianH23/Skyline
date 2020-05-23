@@ -267,14 +267,16 @@ class Skyline:
         # print("val index2 antes " + str(index2))
         index2 = index1
 
+
         if index2 < len(arr2):
             posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
             # print(posLittleArr2inArr1)
             
             #The smallest number of arr2 is bigger than the largest in arr1
             if posLittleArr2inArr1 == len(arr1):
-                intervals.extend(arr1[index1:posLittleArr2inArr1-1])
+                intervals.extend(arr1[index1:posLittleArr2inArr1])
                 values.extend(val1[index1:posLittleArr2inArr1-1])
+                values.append(0)
             #else
             else:
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
@@ -286,10 +288,13 @@ class Skyline:
         # first2 = time.time()*100000000
         # Iterating
         # numite = 0
+        # print(intervals)
+        # print(values)
+        
         while index1 < len(arr1) and index2 < len(arr2):
             # print("inside big loop")
             # firstn = time.time()*100000000
-
+            # print()
             if arr1[index1] > arr2[index2]:
                 intervals.append(arr2[index2])
                 if val1[index1 - 1] < val2[index2]:
@@ -319,6 +324,9 @@ class Skyline:
 
                 index1 += 1
                 index2 += 1
+
+            # print(intervals)
+            # print(values)
             # secondn = time.time()*100000000
             # print("tiempo ite: " + str(secondn-firstn))
             # print()
@@ -333,7 +341,10 @@ class Skyline:
         # print(intervals)
         # print(values)
         # first3 = time.time()*100000000
-
+        # print()
+        # print(intervals)
+        # print(values)
+        # print()
         if index1 != len(arr1):
             intervals.extend(arr1[index1:])
             values.extend(val1[index1:-1])
@@ -344,7 +355,8 @@ class Skyline:
 
         if len(values) == len(intervals)-1:
             values.append(0)
-
+        # print(intervals)
+        # print(values)
         return intervals, values
 
     def intersection(self, arr2, val2):
