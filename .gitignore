@@ -1,6 +1,11 @@
 token.txt
 Data/*
 *.png
+*Lexer.*
+*interp
+*tokens
+*Parser*
+*SkylineVisitor*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

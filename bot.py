@@ -5,7 +5,7 @@ from skyline import *
 import sys
 from antlr4 import *
 
-from EvalVisitor import *
+from cl.EvalVisitor import *
 import os
 from os import path
 import pickle
