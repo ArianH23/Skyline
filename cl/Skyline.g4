@@ -24,14 +24,14 @@ expr:
 
 ident: ID;
 
-skyCreation: 	sky                                                                                     //Simple
-		| LB sky (',' sky)* RB                                                                  //Compost
-		| LC integerValue COMMA integerValue COMMA integerValue COMMA integerValue COMMA integerValue RC       //Random
+skyCreation: 	sky                                                                                                     //Simple
+		| LB sky (COMMA sky)* RB                                                                                //Compost
+		| LC integerValue COMMA integerValue COMMA integerValue COMMA integerValue COMMA integerValue RC        //Random
 	; 
 
 sky: (LP integerValue COMMA integerValue COMMA integerValue RP);
 
-integerValue: '-' INTVAL                                # negIntegerValue
+integerValue: MINUS INTVAL                              # negIntegerValue
 
         | INTVAL                                        # posIntegerValue
 

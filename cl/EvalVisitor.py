@@ -5,206 +5,195 @@ from .SkylineLexer import SkylineLexer
 from .SkylineParser import SkylineParser
 from .SkylineVisitor import *
 if __name__ is not None and "." in __name__:
-    from .SkylineParser import SkylineParser
+ from .SkylineParser import SkylineParser
 else:
-    from SkylineParser import SkylineParser
+ from SkylineParser import SkylineParser
 
 
 class EvalVisitor(SkylineVisitor):
-    def __init__(self, ts, id):
-        self.ts = ts
-        self.id = id
-        self.pathOfUserData = "Data/" + self.id + "/data.dict"
+ def __init__(self, ts, id):
+  self.ts = ts
+  self.id = id
+  self.pathOfUserData = "Data/" + self.id + "/data.dict"
 
-    def visitRoot(self, ctx: SkylineParser.RootContext):
-        res = self.visit(ctx.statement())
-        print("final")
-        #Si s'ha detectat algun error, retorna'l:
-        # print(res.intervalos)
-        # print(res.values)
-        if isinstance(res,str):
-            return res,-1,-1
+ def visitRoot(self, ctx: SkylineParser.RootContext):
+  res = self.visit(ctx.statement())
+  print("final")
 
-        img = res.saveImage()
-        height = res.get_height()
-        area = res.get_area()
+  # Si s'ha detectat algun error, retorna'l:
+  if isinstance(res, str):
+   return res, -1, -1
 
-        return img, height, area
+  img = res.saveImage()
+  height = res.get_height()
+  area = res.get_area()
 
-    def visitIdent(self, ctx: SkylineParser.IdentContext):
-        id = ctx.ID().getText()
-        return id
+  return img, height, area
 
-    def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
-        ident = self.visit(ctx.ident())
-        sky = self.visit(ctx.expr())
-        
-        if isinstance(sky,str):
-            return sky
+ def visitIdent(self, ctx: SkylineParser.IdentContext):
+  id = ctx.ID().getText()
+  return id
 
-        self.ts[ident] = sky
+ def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
+  ident = self.visit(ctx.ident())
+  sky = self.visit(ctx.expr())
 
-        pickle_out = open(self.pathOfUserData, "wb")
-        pickle.dump(self.ts, pickle_out)
-        pickle_out.close()
+  if isinstance(sky, str):
+   return sky
 
-        # print(self.ts)
-        # img = sky.saveImage()
-        return sky
+  self.ts[ident] = sky
 
-    def visitExprValue(self, ctx: SkylineParser.ExprValueContext):
-        res = self.visitChildren(ctx)
-        print("checking type")
-        print(type(res))
-        return res
+  pickle_out = open(self.pathOfUserData, "wb")
+  pickle.dump(self.ts, pickle_out)
+  pickle_out.close()
 
-    def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
-        id = self.visit(ctx.ident())
+  # print(self.ts)
+  # img = sky.saveImage()
+  return sky
 
-        if id in self.ts:
-            sky = self.ts.get(id)
-            print(id)
-            return sky
+ def visitExprValue(self, ctx: SkylineParser.ExprValueContext):
+  res = self.visitChildren(ctx)
+  print("checking type")
+  print(type(res))
+  return res
 
-        else:
-            return "ID no trobat"
+ def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
+  id = self.visit(ctx.ident())
 
-    def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
-        # Creacio de Skyline compost
-        if ctx.LB():
+  if id in self.ts:
+   sky = self.ts.get(id)
+   print(id)
+   return sky
 
-            listOfSkylineValues = []
+  else:
+   return "ID \'" + id + "\' no trobat"
 
-            for sky in ctx.sky():
-                xmin = self.visit(sky.integerValue(0))
-                height = self.visit(sky.integerValue(1))
-                xmax = self.visit(sky.integerValue(2))
+ def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
+     # Creacio de Skyline compost
+  if ctx.LB():
 
-                #Comprobació d'errors de xmin i xmax.
-                if xmin >= xmax:
-                    return "El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
+   listOfSkylineValues = []
 
-                #Comprobació d'errors de height.
-                if height <= 0:
-                    return "L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
+   for sky in ctx.sky():
+    xmin = self.visit(sky.integerValue(0))
+    height = self.visit(sky.integerValue(1))
+    xmax = self.visit(sky.integerValue(2))
 
-                listOfSkylineValues.append(xmin)
-                listOfSkylineValues.append(height)
-                listOfSkylineValues.append(xmax)
-                print(type(xmin))
-            print(listOfSkylineValues)
-            print("creating compost")
-            sky = Skyline(listOfSkylineValues, 0, type="complex")
-            print("doneso")
-            print("Done, type is "+ str(type(sky)))
+    # Comprobació d'errors de xmin i xmax.
+    if xmin >= xmax:
+     return "ERROR: El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
 
-            return sky
+    # Comprobació d'errors de height.
+    if height <= 0:
+     return "ERROR: L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
 
-        # Creacio de Skyline simple
-        elif ctx.sky(0):
-            return self.visitSky(ctx.sky(0))
+    listOfSkylineValues.append(xmin)
+    listOfSkylineValues.append(height)
+    listOfSkylineValues.append(xmax)
 
-        # Creacio de Skyline random
-        elif ctx.LC():
+   sky = Skyline(listOfSkylineValues, 0, type="complex")
 
-            buildings = self.visit(ctx.integerValue(0))
-            height = self.visit(ctx.integerValue(1))
-            width = self.visit(ctx.integerValue(2))
-            xmin = self.visit(ctx.integerValue(3))
-            xmax = self.visit(ctx.integerValue(4))
+   return sky
 
-            #Comprobació d'errors de xmin i xmax.
+  # Creacio de Skyline simple
+  elif ctx.sky(0):
+   return self.visitSky(ctx.sky(0))
 
-            if xmin >= xmax:
-                return "El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
-            
-            #Comprobació d'errors de height.
-            if height <= 0:
-                return "L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
+  # Creacio de Skyline random
+  elif ctx.LC():
 
-            sky = Skyline(buildings, height, width, xmin, xmax, type="random")
+   buildings = self.visit(ctx.integerValue(0))
+   height = self.visit(ctx.integerValue(1))
+   width = self.visit(ctx.integerValue(2))
+   xmin = self.visit(ctx.integerValue(3))
+   xmax = self.visit(ctx.integerValue(4))
 
-            return sky
+   # Comprobació d'errors de xmin i xmax.
+   if xmin >= xmax:
+    return "ERROR: El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
 
-    # Visit a parse tree produced by SkylineParser#sky.
+   # Comprobació d'errors de height.
+   if height <= 0:
+    return "ERROR: L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
 
-    def visitSky(self, ctx: SkylineParser.SkyContext):
-        xmin = self.visit(ctx.integerValue(0))
-        height = self.visit(ctx.integerValue(1))
-        xmax = self.visit(ctx.integerValue(2))
+   sky = Skyline(buildings, height, width, xmin, xmax, type="random")
 
-        #Comprobació d'errors de xmin i xmax.
-        if xmin >= xmax:
-            return "El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
-        
-        #Comprobació d'errors de height.
-        if height <= 0:
-            return "L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
+   return sky
 
-        return Skyline(xmin, height, xmax)
+ def visitSky(self, ctx: SkylineParser.SkyContext):
+  xmin = self.visit(ctx.integerValue(0))
+  height = self.visit(ctx.integerValue(1))
+  xmax = self.visit(ctx.integerValue(2))
 
-    def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
-        # print("why hello there")
-        return self.visitSkyCreation(ctx.skyCreation())
+  # Comprobació d'errors de xmin i xmax.
+  if xmin >= xmax:
+   return "ERROR: El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
 
-    # Visit a parse tree produced by SkylineParser#parenthesis.
+  # Comprobació d'errors de height.
+  if height <= 0:
+   return "ERROR: L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
 
-    def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
-        return self.visit(ctx.expr())
+  return Skyline(xmin, height, xmax)
 
-    # Visit a parse tree produced by SkylineParser#interRepli.
+ def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
 
-    def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
-        sky = self.visit(ctx.expr(0))
-        val = self.visit(ctx.expr(1))
+  return self.visit(ctx.skyCreation())
 
-        if isinstance(sky,str):
-            return sky
-
-        elif isinstance(val,str):
-            return val
-
-        ret = sky * val
-        return ret
-
-    # Visit a parse tree produced by SkylineParser#integerVal.
-
-    def visitPosIntegerValue(self, ctx: SkylineParser.PosIntegerValueContext):
-        value = int(ctx.INTVAL().getText())
-
-        return value
-
-    # Visit a parse tree produced by SkylineParser#negIntegerValue.
-    def visitNegIntegerValue(self, ctx:SkylineParser.NegIntegerValueContext):
-        value = int(ctx.INTVAL().getText())
-
-        return -value
+ def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
+  return self.visit(ctx.expr())
 
 
-    def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
+ def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
+  sky = self.visit(ctx.expr(0))
+  val = self.visit(ctx.expr(1))
 
-        sky = self.visit(ctx.expr(0))
-        val = self.visit(ctx.expr(1))
-        
-        if isinstance(sky,str):
-            return sky
+  if isinstance(sky, str):
+   return sky
 
-        elif isinstance(val,str):
-            return val
+  elif isinstance(val, str):
+   return val
 
-        if ctx.PLUS():
-            ret = sky + val
-            return ret
-        elif ctx.MINUS():
-            ret = sky - val
-            return ret
+  ret = sky * val
+  return ret
 
-    # Visit a parse tree produced by SkylineParser#mirror.
+ # Visit a parse tree produced by SkylineParser#integerVal.
 
-    def visitMirror(self, ctx: SkylineParser.MirrorContext):
-        sky = self.visit(ctx.expr())
+ def visitPosIntegerValue(self, ctx: SkylineParser.PosIntegerValueContext):
+  value = int(ctx.INTVAL().getText())
 
-        if isinstance(sky,str):
-            return sky
+  return value
 
-        return -sky
+ # Visit a parse tree produced by SkylineParser#negIntegerValue.
+ def visitNegIntegerValue(self, ctx: SkylineParser.NegIntegerValueContext):
+  value = int(ctx.INTVAL().getText())
+
+  return -value
+
+ def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
+
+  sky = self.visit(ctx.expr(0))
+  val = self.visit(ctx.expr(1))
+
+  if isinstance(sky, str):
+   return sky
+
+  elif isinstance(val, str):
+   return val
+
+  if ctx.PLUS():
+   ret = sky + val
+   return ret
+
+  elif ctx.MINUS():
+   ret = sky - val
+   return ret
+
+ # Visit a parse tree produced by SkylineParser#mirror.
+
+ def visitMirror(self, ctx: SkylineParser.MirrorContext):
+  sky = self.visit(ctx.expr())
+
+  if isinstance(sky, str):
+   return sky
+
+  return -sky

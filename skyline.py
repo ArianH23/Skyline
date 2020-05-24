@@ -8,7 +8,50 @@ class Skyline:
 
     def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None,asigna_atribs = True):
 
-        if type == "random":
+        #Creació de Skyline simple
+        if type == None:
+            if interval2 is None:
+                self.intervalos = interval1
+                self.values = heights
+
+            else:
+                self.intervalos = [interval1, interval2]
+                self.values = [heights] + [0]
+
+            if color == None:
+                # Avoid creating a white Skyline which would not be seen.
+                red = min(0.85, random.random())
+                green = min(0.85, random.random())
+                blue = min(0.85, random.random())
+
+                self.color = (red,green,blue)
+            else:
+                self.color = color
+
+            if asigna_atribs == True:
+                self.__area = self.__calculaArea()
+                self.__height = max(self.values)
+                self.intervalos, self.values = flatten(
+                self.intervalos, self.values)
+        
+        #Creació de Skyline simple
+        elif type == "complex":
+            firstSky = Skyline(interval1[0],interval1[1],interval1[2])
+            self.__height = interval1[1]
+
+            for i in range(1,len(interval1) // 3):
+                firstSky += Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
+                
+                if interval1[(i*3)+1] > self.__height:
+                    self.__height = interval1[(i*3)+1]
+
+            self.intervalos, self.values = flatten(
+                firstSky.intervalos, firstSky.values)
+            
+            self.color = firstSky.color
+            self.__area = self.__calculaArea()
+
+        elif type == "random":
             maxFinal = xmax-interval2
 
             randomWidth = randint(1, interval2)
@@ -44,53 +87,21 @@ class Skyline:
             self.intervalos, self.values = flatten(
                 firstSky.intervalos, firstSky.values)
             self.color = firstSky.color
-            self.area = self.__calculaArea(self.intervalos, self.values)
+            self.__area = self.__calculaArea()
 
-        elif type == "complex":
-            firstSky = Skyline(interval1[0],interval1[1],interval1[2])
-            self.__height = interval1[1]
-
-            for i in range(1,len(interval1) // 3):
-                firstSky += Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
-                
-                if interval1[(i*3)+1] > self.__height:
-                    self.__height = interval1[(i*3)+1]
-
-            self.intervalos, self.values = flatten(
-                firstSky.intervalos, firstSky.values)
-            
-            self.color = firstSky.color
-            self.area = self.__calculaArea(self.intervalos, self.values)
-
-        else:
-            if interval2 is None:
-                self.intervalos = interval1
-                self.values = heights
-
-            else:
-                self.intervalos = [interval1, interval2]
-                self.values = [heights] + [0]
-
-            if color == None:
-                # Avoid creating a white Skyline which would not be seen.
-                red = min(0.85, random.random())
-                green = min(0.85, random.random())
-                blue = min(0.85, random.random())
-
-                self.color = (red,green,blue)
-            else:
-                self.color = color
-
-            if asigna_atribs == True:
-                self.area = self.__calculaArea(self.intervalos, self.values)
-                self.__height = max(self.values)
-                self.intervalos, self.values = flatten(
-                self.intervalos, self.values)
-    
-        # print(self.area)
-    def __calculaArea(self, intervalos, values):
-        area = 0
         
+
+        
+    
+
+    def __calculaArea(self):
+        """
+        Funció que calcula l'àrea d'un Skyline
+        """
+        area = 0
+        intervalos = self.intervalos
+        values = self.values
+
         for i in range(1,len(intervalos)):
             width = intervalos[i] - intervalos[i-1]
             height = values[i-1]
@@ -449,9 +460,15 @@ class Skyline:
         return flattenedIntervals, flattenedValues
     
     def get_area(self):
-        return self.area
+        """
+        Funció getter de l'atribut àrea
+        """
+        return self.__area
 
     def get_height(self):
+        """
+        Funció getter de l'atribut height
+        """
         return self.__height
 
 def binary_search(list, val):
