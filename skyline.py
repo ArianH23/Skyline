@@ -110,7 +110,7 @@ class Skyline:
         elif isinstance(other, int):
             intervalOff = self.moveOffset(other)
 
-            return Skyline(intervalOff, self.values)
+            return Skyline(intervalOff, self.values,color=self.color)
 
     def __iadd__(self, other):
         if isinstance(other, Skyline):
@@ -125,7 +125,7 @@ class Skyline:
         if isinstance(other, int):
             intervalOff = self.moveOffset(-other)
 
-            return Skyline(intervalOff, self.values)
+            return Skyline(intervalOff, self.values,color=self.color)
 
     def __mul__(self, other):
         if isinstance(other, Skyline):
@@ -233,9 +233,9 @@ class Skyline:
 
         intervals = []
         values = []
-
+        overlapped = False
         while index1 < len(arr1) and index1 < len(arr2) and arr1[index1] == arr2[index1]:
-
+            overlapped = True
             values.append(max(val1[index1], val2[index1]))
             intervals.append(arr1[index1])
 
@@ -270,17 +270,24 @@ class Skyline:
         # print(arr1)
         # print("val index2 antes " + str(index2))
         index2 = index1
-
+        # print(intervals)
+        # print(values)
 
         if index2 < len(arr2):
+            # print("is less than")
             posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
             # print(posLittleArr2inArr1)
-            
+            # print("position = " +str(posLittleArr2inArr1))
             #The smallest number of arr2 is bigger than the largest in arr1
             if posLittleArr2inArr1 == len(arr1):
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
                 values.extend(val1[index1:posLittleArr2inArr1-1])
-                values.append(0)
+
+                if not overlapped:
+                    values.append(0)
+                    # print("adding")
+                else:
+                    values.append(values[-1])
             #else
             else:
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
@@ -294,7 +301,9 @@ class Skyline:
         # numite = 0
         # print(intervals)
         # print(values)
-        
+        # print()
+        # print(intervals)
+        # print(values)
         while index1 < len(arr1) and index2 < len(arr2):
             # print("inside big loop")
             # firstn = time.time()*100000000
@@ -349,6 +358,10 @@ class Skyline:
         # print(intervals)
         # print(values)
         # print()
+        # print (index1)
+        # print(index2)
+        # print()
+        # print(val2)
         if index1 != len(arr1):
             intervals.extend(arr1[index1:])
             values.extend(val1[index1:-1])
@@ -356,9 +369,15 @@ class Skyline:
         elif index2 != len(arr2):
             intervals.extend(arr2[index2:])
             values.extend(val2[index2:-1])
+            # print("extending")
 
         if len(values) == len(intervals)-1:
             values.append(0)
+        # else:
+        #     values[-1] = 0
+        # print(intervals)
+        # print(values)
+        # print()
         # print(intervals)
         # print(values)
         return intervals, values

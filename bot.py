@@ -2,12 +2,10 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 from skyline import *
-import sys
 from antlr4 import *
 
 from cl.EvalVisitor import *
-import os
-from os import path
+from os import path, remove, mkdir
 import pickle
 from telegram import ParseMode
 
@@ -42,9 +40,7 @@ def lst(update, context):
     userId = str(update.message.from_user['id'])
 
     pathOfUserData = "Data/" + userId + "/data.dict"
-    print("xdxd")
     if path.exists(pathOfUserData):
-        print("hi")
         pickle_in = open(pathOfUserData , "rb")
         userData = pickle.load(pickle_in)
         print(userData)
@@ -70,7 +66,7 @@ def clean(update, context):
     pathOfUserData = "Data/" + userId + "/data.dict"
 
     if path.exists(pathOfUserData):
-        os.remove(pathOfUserData)
+        remove(pathOfUserData)
 
         message = "Les teves dades s'han esborrat correctament!"
         context.bot.send_message(
@@ -140,7 +136,7 @@ def load(update, context):
         pickle.dump(userData, pickle_out)
         pickle_out.close()
 
-        os.remove(pathOfUserSky)
+        remove(pathOfUserSky)
 
         message = "S'ha carregat correctament el Skyline amb ID: \'" + \
             skyId + "\' a les teves dades i s'ha esborrat de disc!"
@@ -170,15 +166,20 @@ def leeElTexto(update, context):
             print(userData)
 
     else:
-        os.mkdir(pathOfUser)
+        mkdir(pathOfUser)
 
     img, height, area = parse(message, userData, userId)
 
-    sendPhoto(img, update, context)
-    message = "Àrea: " + str(area) + "\n"
-    message += "Alçada: " + str(height)
+    if height == -1:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=img)
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    else:
+
+        sendPhoto(img, update, context)
+        message = "Àrea: " + str(area) + "\n"
+        message += "Alçada: " + str(height)
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 def sendPhoto(skyline, update, context):
@@ -186,7 +187,7 @@ def sendPhoto(skyline, update, context):
     context.bot.send_photo(
         chat_id=update.effective_chat.id,
         photo=open(skyline, 'rb'))
-    os.remove(skyline)
+    remove(skyline)
 
 
 def parse(message, userData, userId):
