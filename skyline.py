@@ -7,6 +7,9 @@ import time
 class Skyline:
 
     def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None,asigna_atribs = True):
+        """
+        Mètode creador de la classe Skyline
+        """
 
         #Creació de Skyline simple
         if type == None:
@@ -19,7 +22,7 @@ class Skyline:
                 self.values = [heights] + [0]
 
             if color == None:
-                # Avoid creating a white Skyline which would not be seen.
+                # Avoid creating a white Skyline which would not be seen in the plot.
                 red = min(0.85, random.random())
                 green = min(0.85, random.random())
                 blue = min(0.85, random.random())
@@ -34,7 +37,7 @@ class Skyline:
                 self.intervalos, self.values = flatten(
                 self.intervalos, self.values)
         
-        #Creació de Skyline simple
+        #Creació de Skyline compost
         elif type == "complex":
             firstSky = Skyline(interval1[0],interval1[1],interval1[2])
             self.__height = interval1[1]
@@ -51,6 +54,7 @@ class Skyline:
             self.color = firstSky.color
             self.__area = self.__calculaArea()
 
+        #Creació de Skyline aleatori
         elif type == "random":
             maxFinal = xmax-interval2
 
@@ -89,14 +93,10 @@ class Skyline:
             self.color = firstSky.color
             self.__area = self.__calculaArea()
 
-        
-
-        
-    
 
     def __calculaArea(self):
         """
-        Funció que calcula l'àrea d'un Skyline
+        Mètode que calcula l'àrea d'un Skyline
         """
         area = 0
         intervalos = self.intervalos
@@ -111,6 +111,9 @@ class Skyline:
         return area
 
     def __add__(self, other):
+        """
+        Overload de l'operació add de la classe Skyline
+        """
         if isinstance(other, Skyline):
             arr2 = other.intervalos
             val2 = other.values
@@ -124,6 +127,9 @@ class Skyline:
             return Skyline(intervalOff, self.values,color=self.color)
 
     def __iadd__(self, other):
+        """
+        Overload de l'operació iadd de la classe Skyline
+        """
         if isinstance(other, Skyline):
             arr2 = other.intervalos
             val2 = other.values
@@ -133,12 +139,18 @@ class Skyline:
 
 
     def __sub__(self, other):
+        """
+        Overload de l'operació sub de la classe Skyline
+        """
         if isinstance(other, int):
             intervalOff = self.moveOffset(-other)
 
             return Skyline(intervalOff, self.values,color=self.color)
 
     def __mul__(self, other):
+        """
+        Overload de l'operació mul de la classe Skyline
+        """
         if isinstance(other, Skyline):
             arr2 = other.intervalos
             val2 = other.values
@@ -152,6 +164,9 @@ class Skyline:
             return Skyline(intervals, values, color=self.color)
 
     def __neg__(self):
+        """
+        Overload de l'operació neg de la classe Skyline
+        """
         intervals, values = self.mirror()
         return Skyline(intervals, values, color=self.color)
 
@@ -207,7 +222,7 @@ class Skyline:
                  weights=self.values, color=self.color)
 
         # Necessary to plot only integer values in the axis
-        # # # # # self.xyints()
+        # # self.xyints()
 
         # plt.show()
         pathOfImage = "img.png"
@@ -298,7 +313,7 @@ class Skyline:
                     values.append(0)
                     # print("adding")
                 else:
-                    values.append(values[-1])
+                    values.append(val2[index2-1])
             #else
             else:
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
@@ -461,13 +476,13 @@ class Skyline:
     
     def get_area(self):
         """
-        Funció getter de l'atribut àrea
+        Mètode getter de l'atribut àrea
         """
         return self.__area
 
     def get_height(self):
         """
-        Funció getter de l'atribut height
+        Mètode getter de l'atribut height
         """
         return self.__height
 
