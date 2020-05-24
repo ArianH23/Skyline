@@ -16,9 +16,12 @@ pip3 install -r requirements.txt
 Para ejecutar el bot con el que se podrá interactuar atraves de Telegram serán necesarios una serie de archivos generados por antlr. Para obtenerlos bastará con ejecutar la siguiente instrucción:
 ```
 antlr4 -Dlanguage=Python3 -no-listener -visitor cl/Skyline.g4
-
 ```
+
 Y finalmente, para empezar a interactuar con el bot por Telegram:
 ```
 python3 bot.py
 ```
+
+## Autor
+* Rodrigo Arian Huapaya Sierra

@@ -12,6 +12,7 @@ import pickle
 
 
 def start(update, context):
+ """Funció de l'ordre /start. Que saluda a l'usuari."""
 
  username = update.effective_chat.first_name
  message = "SkylineBot!\nBenvingut " + username + \
@@ -20,6 +21,8 @@ def start(update, context):
 
 
 def help(update, context):
+ """Funció de l'ordre /help. Que mostra totes les ordres possibles del bot."""
+
  message = "A continuació tens un llistat de les comandes que es poden executar en aquest bot:\n\n"
  message += "/start: Es mostrarà el missatge inicial del bot.\n\n"
  message += "/help: Es mostrarà aquest missage un altre cop, en el que pots trobar informació sobre les comandes del bot.\n\n"
@@ -33,11 +36,15 @@ def help(update, context):
 
 
 def author(update, context):
+ """Funció de l'ordre /author. Que mostra l'autor del bot i el seu correu."""
+ 
  message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, rodrigo.arian.huapaya@est.fib.upc.edu"
  context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 def lst(update, context):
+ """Funció de la comanda /lst. Que mostra els identificadors de l'usuari."""
+
  userId = str(update.message.from_user['id'])
 
  pathOfUserData = "Data/" + userId + "/data.dict"
@@ -62,6 +69,8 @@ def lst(update, context):
 
 
 def clean(update, context):
+ """Funció de la comanda /clean. Que borra tots els identificadors de l'usuari."""
+
  userId = str(update.message.from_user['id'])
 
  pathOfUserData = "Data/" + userId + "/data.dict"
@@ -79,6 +88,8 @@ def clean(update, context):
 
 
 def save(update, context):
+ """Funció de la comanda /save. Que guarda l'identificador \'id\' que especifiqui l'usuari a disc."""
+
  userId = str(update.message.from_user['id'])
  skyId = update.message.text.split()[1]
 
@@ -114,6 +125,8 @@ def save(update, context):
 
 
 def load(update, context):
+ """Funció de la comanda /load. Que carrega l'identificador \'id\' de disc que especifiqui l'usuari i el borra de disc."""
+
  userId = str(update.message.from_user['id'])
  skyId = update.message.text.split()[1]
 
@@ -150,6 +163,12 @@ def load(update, context):
 
 
 def leeElTexto(update, context):
+ """
+ Funció que es crida per defecte si no s'utilitza cap ordre.\n
+ S'encarrega d'analitzar el text donat per a crear un Skyline
+ utilitzant les dades que tingui emmagatzemades l'usuari.
+ """
+
  message = update.message.text
  print(message)
 
@@ -169,14 +188,15 @@ def leeElTexto(update, context):
  else:
   mkdir(pathOfUser)
 
- img, height, area = parse(message, userData, userId)
+ imgOrError, height, area = parse(message, userData, userId)
 
+ # Si height és -1, hi ha hagut un error i es comunica d'ell a l'usuari.
  if height == -1:
-  context.bot.send_message(chat_id=update.effective_chat.id, text=img)
+  context.bot.send_message(chat_id=update.effective_chat.id, text=imgOrError)
 
  else:
 
-  sendPhoto(img, update, context)
+  sendPhoto(imgOrError, update, context)
   message = "Àrea: " + str(area) + "\n"
   message += "Alçada: " + str(height)
 
@@ -184,6 +204,7 @@ def leeElTexto(update, context):
 
 
 def sendPhoto(skyline, update, context):
+ """Funció que envia la imatge d'un Skyline a l'usuari."""
 
  context.bot.send_photo(
      chat_id=update.effective_chat.id,
@@ -192,6 +213,8 @@ def sendPhoto(skyline, update, context):
 
 
 def parse(message, userData, userId):
+ """Funció que analitza el missatge enviat per l'usuari per retornar un Skyline"""
+
  visitor = EvalVisitor(userData, userId)
  print("parsing")
  code = InputStream(message)
@@ -201,10 +224,10 @@ def parse(message, userData, userId):
  parser = SkylineParser(token_stream)
  tree = parser.root()
 
- img, height, area = visitor.visit(tree)
+ imgOrError, height, area = visitor.visit(tree)
  print("parsing done")
 
- return img, height, area
+ return imgOrError, height, area
 
 
 
@@ -216,7 +239,7 @@ TOKEN = open('token.txt').read().strip()
 updater = Updater(token=TOKEN, use_context=True)
 dp = updater.dispatcher
 
-# Indica quina funció executa el bot depenen de la comanda que rebi: 
+# Indica quina funció executa el bot depenen de l'ordre que rebi: 
 # /start, /help, /author,/lst, /lst, /clean, /save o /load.
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('help', help))

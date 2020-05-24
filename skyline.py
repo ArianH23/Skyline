@@ -1,14 +1,14 @@
 from matplotlib import pyplot as plt
 import random
 from random import randint
-import time
+
 
 
 class Skyline:
 
     def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None,asigna_atribs = True):
         """
-        Mètode creador de la classe Skyline
+        Mètode creador de la classe Skyline.
         """
 
         #Creació de Skyline simple
@@ -40,10 +40,12 @@ class Skyline:
         #Creació de Skyline compost
         elif type == "complex":
             firstSky = Skyline(interval1[0],interval1[1],interval1[2])
+            
             self.__height = interval1[1]
 
             for i in range(1,len(interval1) // 3):
-                firstSky += Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
+                if interval1[(i*3)+1] > 0:
+                    firstSky += Skyline(interval1[i*3], interval1[(i*3)+1], interval1[(i*3)+2])
                 
                 if interval1[(i*3)+1] > self.__height:
                     self.__height = interval1[(i*3)+1]
@@ -96,7 +98,7 @@ class Skyline:
 
     def __calculaArea(self):
         """
-        Mètode que calcula l'àrea d'un Skyline
+        Mètode que calcula l'àrea del Skyline.
         """
         area = 0
         intervalos = self.intervalos
@@ -112,7 +114,7 @@ class Skyline:
 
     def __add__(self, other):
         """
-        Overload de l'operació add de la classe Skyline
+        Overload de l'operació add de la classe Skyline.
         """
         if isinstance(other, Skyline):
             arr2 = other.intervalos
@@ -128,7 +130,7 @@ class Skyline:
 
     def __iadd__(self, other):
         """
-        Overload de l'operació iadd de la classe Skyline
+        Overload de l'operació iadd de la classe Skyline.
         """
         if isinstance(other, Skyline):
             arr2 = other.intervalos
@@ -140,7 +142,7 @@ class Skyline:
 
     def __sub__(self, other):
         """
-        Overload de l'operació sub de la classe Skyline
+        Overload de l'operació sub de la classe Skyline.
         """
         if isinstance(other, int):
             intervalOff = self.moveOffset(-other)
@@ -149,7 +151,7 @@ class Skyline:
 
     def __mul__(self, other):
         """
-        Overload de l'operació mul de la classe Skyline
+        Overload de l'operació mul de la classe Skyline.
         """
         if isinstance(other, Skyline):
             arr2 = other.intervalos
@@ -165,12 +167,13 @@ class Skyline:
 
     def __neg__(self):
         """
-        Overload de l'operació neg de la classe Skyline
+        Overload de l'operació neg de la classe Skyline.
         """
         intervals, values = self.mirror()
         return Skyline(intervals, values, color=self.color)
 
     def mirror(self):
+        """Mètode que permet a un Skyline fer l'operació de mirror sobre ell mateix."""
         intervalsDistance = []
         reversedValues = self.values[:-1]
         reversedValues.reverse()
@@ -255,7 +258,12 @@ class Skyline:
         val1 = self.values
         # seconda = time.time()*100000000
 
-        # print("asig: " + str(seconda-firsta))
+        #Si algun dels Skylines és buit, retorna l'altre Skyline.
+        if val1[0] == 0:
+            return arr2,val2
+        elif val2[0] == 0:
+            return arr1,val1
+        
 
         intervals = []
         values = []
@@ -364,29 +372,7 @@ class Skyline:
                 index1 += 1
                 index2 += 1
 
-            # print(intervals)
-            # print(values)
-            # secondn = time.time()*100000000
-            # print("tiempo ite: " + str(secondn-firstn))
-            # print()
-            # numite += 1
-        # print(intervals)
-        # print(values)
-        # input()
-        # print("numero de ites: " + str(numite))
-        # second2 = time.time()*100000000
-        # print("bucle2: " + str(second2-first2))
-        # print()
-        # print(intervals)
-        # print(values)
-        # first3 = time.time()*100000000
-        # print()
-        # print(intervals)
-        # print(values)
-        # print()
-        # print (index1)
-        # print(index2)
-        # print()
+
         # print(val2)
         if index1 != len(arr1):
             intervals.extend(arr1[index1:])
@@ -399,13 +385,7 @@ class Skyline:
 
         if len(values) == len(intervals)-1:
             values.append(0)
-        # else:
-        #     values[-1] = 0
-        # print(intervals)
-        # print(values)
-        # print()
-        # print(intervals)
-        # print(values)
+
         return intervals, values
 
     def intersection(self, arr2, val2):
@@ -465,12 +445,19 @@ class Skyline:
 
         if len(values) == len(intervals)-1:
             values.append(0)
-
+        print(intervals)
+        print(values)
         flattenedIntervals, flattenedValues = flatten(intervals, values)
+        print()
+        print(flattenedIntervals)
+        print(flattenedValues)
 
-        while flattenedValues[0] == 0:
+        while len(flattenedValues)>0 and flattenedValues[0] == 0:
             flattenedIntervals.pop(0)
             flattenedValues.pop(0)
+
+        if len(flattenedValues) == 0:
+            return [0,1], [0,0]
 
         return flattenedIntervals, flattenedValues
     

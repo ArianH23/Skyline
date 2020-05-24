@@ -84,8 +84,8 @@ class EvalVisitor(SkylineVisitor):
      return "ERROR: El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
 
     # Comprobació d'errors de height.
-    if height <= 0:
-     return "ERROR: L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
+    if height < 0:
+     return "ERROR: L'alçada dels edificis que vols crear es negativa, que no és vàlid."
 
     listOfSkylineValues.append(xmin)
     listOfSkylineValues.append(height)
@@ -113,8 +113,8 @@ class EvalVisitor(SkylineVisitor):
     return "ERROR: El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
 
    # Comprobació d'errors de height.
-   if height <= 0:
-    return "ERROR: L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
+   if height < 0:
+    return "ERROR: L'alçada dels edificis que vols crear es negativa, que no és vàlid."
 
    sky = Skyline(buildings, height, width, xmin, xmax, type="random")
 
@@ -130,8 +130,8 @@ class EvalVisitor(SkylineVisitor):
    return "ERROR: El valor de xmin és major o igual que xmax en un dels edificis que vols crear, que no és vàlid."
 
   # Comprobació d'errors de height.
-  if height <= 0:
-   return "ERROR: L'alçada dels edificis que vols crear es inferior o igual a 0, que no és valid."
+  if height < 0:
+   return "ERROR: L'alçada dels edificis que vols crear es negativa, que no és vàlid."
 
   return Skyline(xmin, height, xmax)
 
