@@ -4,20 +4,23 @@ from random import randint, random
 
 class Skyline:
 
-    def __init__(self, interval1, heights, interval2=None, xmin=None, xmax=None, color=None, type=None, asigna_atribs=True):
+    def __init__(self, param1, param2=None, param3=None, xmin=None, xmax=None, color=None, type=None, asigna_atribs=True):
         """
         Mètode creador de la classe Skyline.
         """
 
         # Creació de Skyline simple
+        # En aquest cas depenent de si param3 es buit:
+        # param1 = xmin, param2 = height, param3 = xmax
+        # param1 = llistaIntervals, param2 = llistaValues
         if type == None:
-            if interval2 is None:
-                self.__intervalos = interval1
-                self.__values = heights
+            if param3 is None:
+                self.__intervalos = param1
+                self.__values = param2
 
             else:
-                self.__intervalos = [interval1, interval2]
-                self.__values = [heights] + [0]
+                self.__intervalos = [param1, param3]
+                self.__values = [param2] + [0]
 
             if color == None:
                 # Avoid creating a white Skyline which would not be seen in the plot.
@@ -36,47 +39,55 @@ class Skyline:
                     self.__intervalos, self.__values)
 
         # Creació de Skyline compost
+        # En aquest cas:
+        # param1 = llistaDeIntervalsIHeightsDe Skylines, de la forma:
+        # [[xmin1, height1, xmax1], [xmin2, height2, xmax2]...]
         elif type == "complex":
-            firstSky = Skyline(interval1[0], interval1[1], interval1[2])
+            print(param1)
+            firstSky = Skyline(param1[0][0], param1[0][1], param1[0][2])
 
-            self.__height = interval1[1]
+            self.__height = param1[0][1]
 
-            for i in range(1, len(interval1) // 3):
-                if interval1[(i*3)+1] > 0:
-                    firstSky += Skyline(interval1[i*3],
-                                        interval1[(i*3)+1], interval1[(i*3)+2])
+            for i in range(1, len(param1)):
+                # Si el Skyline té alçada major que 0 i per tant es pot crear
+                if param1[i][1] > 0:
+                    firstSky += Skyline(param1[i][0],
+                                        param1[i][1], param1[i][2])
 
-                if interval1[(i*3)+1] > self.__height:
-                    self.__height = interval1[(i*3)+1]
+                    if param1[i][1] > self.__height:
+                        self.__height = param1[i][1]
 
-            self.intervalos, self.values = flatten(
+            self.__intervalos, self.__values = flatten(
                 firstSky.__intervalos, firstSky.__values)
 
             self.__color = firstSky.__color
             self.__area = self.__calculaArea()
 
         # Creació de Skyline aleatori
+        # En aquest cas:
+        # param1 = nombreDeEdificis, param2 = alçadaMaximaDelsEdificis, param3 = ampladaMaximaDelsEdificis
         elif type == "random":
-            maxFinal = xmax-interval2
+            maxFinal = xmax-param3
 
-            randomWidth = randint(1, interval2)
-            randomHeight = randint(1, heights)
+            nombreDeEdificis = param1
+            alturaMaxima = param2
+            ampladaMaxima = param3
+
+            randomWidth = randint(1, ampladaMaxima)
+            randomHeight = randint(1, alturaMaxima)
             randomXMin = randint(xmin, maxFinal)
 
             firstSky = Skyline(randomXMin, randomHeight,
                                randomXMin + randomWidth)
 
             self.__height = randomHeight
-            # print (firstSky.intervalos)
-            # print(firstSky.values)
-            for i in range(1, interval1):
-                # print(i)
-                # print("randoming")
-                randomHeight = randint(0, heights)
+
+            for i in range(1, nombreDeEdificis):
+
+                randomHeight = randint(0, alturaMaxima)
                 randomXMin = randint(xmin, maxFinal)
-                randomWidth = randint(1, interval2)
-                # print(type(randomHeight))
-                # print(str(randomXMin) + " " +str(randomHeight) +  " " + str(randomXMin +randomWidth))
+                randomWidth = randint(1, ampladaMaxima)
+
                 if randomHeight > 0:
                     newSky = Skyline(randomXMin, randomHeight,
                                      randomXMin + randomWidth, asigna_atribs=False)
@@ -84,12 +95,8 @@ class Skyline:
 
                     if randomHeight > self.__height:
                         self.__height = randomHeight
-                # print(firstSky.values)
-                # # input()
-                # print (firstSky.intervalos)
-                # print(firstSky.values)
 
-            self.intervalos, self.values = flatten(
+            self.__intervalos, self.__values = flatten(
                 firstSky.__intervalos, firstSky.__values)
             self.__color = firstSky.__color
             self.__area = self.__calculaArea()
@@ -196,11 +203,17 @@ class Skyline:
         return finalIntervals, reversedValues
 
     def moveOffset(self, offset):
+        """
+        Mètode que permet al Skyline fer l'operació de desplaçament donat un offset.
+        """
         intervals = [x + offset for x in self.__intervalos]
 
         return intervals
 
     def replicate(self, rep):
+        """
+        Mètode que permet al Skyline fer l'operació de replicació donat un nombre de repeticions.
+        """
         distance = self.__intervalos[-1] - self.__intervalos[0]
         intervalsToAppend = self.__intervalos[1:]
         valuesToReplicate = self.__values[:-1]
@@ -219,37 +232,22 @@ class Skyline:
         return finalIntervals, valuesToReplicate
 
     def saveImage(self):
+        """
+        Mètode que permet al Skyline guardar una imatge de la seva representació.
+        """
         plt.hist(self.__intervalos, bins=self.__intervalos,
                  weights=self.__values, color=self.__color)
 
-        # Necessary to plot only integer values in the axis
-        # # self.xyints()
-
-        # plt.show()
         pathOfImage = "img.png"
         plt.savefig(pathOfImage)
-        # self.color = plt.get_color()
+
         plt.clf()
         return pathOfImage
 
-    def xyints(self):
-        """
-        Hace que los valores en los ejes X e Y
-        del plot actual sean enteros y no floats
-        """
-        yint = []
-        locs, labels = plt.yticks()
-        for each in locs:
-            yint.append(int(each))
-        plt.yticks(yint)
-
-        xint = []
-        locs, labels = plt.xticks()
-        for each in locs:
-            xint.append(int(each))
-        plt.xticks(xint)
-
     def union(self, arr2, val2):
+        """
+        Mètode que permet al Skyline fer l'operació d'unió amb un altre Skyline.
+        """
         index1 = 0
         arr1 = self.__intervalos
         val1 = self.__values
@@ -269,15 +267,16 @@ class Skyline:
             intervals.append(arr1[index1])
 
             index1 += 1
-            # index2 += 1
+
         # For the whole operation to work, the program has to take the
         # array with the first smallest value as a "reference" to check
         # the values of the other array, this conditional makes sure that
         # arr1 is the array which has the smallest first value
         if index1 < len(arr1) and index1 < len(arr2):
+
             if arr2[index1] < arr1[index1]:
+
                 arr1, arr2 = arr2, arr1
-                # index1, index2 = index2, index1
                 val1, val2 = val2, val1
 
         index2 = index1
@@ -292,7 +291,7 @@ class Skyline:
 
                 if not overlapped:
                     values.append(0)
-                    # print("adding")
+
                 else:
                     values.append(val2[index2-1])
             # else
@@ -304,20 +303,17 @@ class Skyline:
 
                 else:
                     while index1 < posLittleArr2inArr1:
-                        # print(index1)
 
                         if val2[index2-1] > val1[index1]:
                             values.append(val2[index2-1])
                         else:
                             values.append(val1[index1])
                         index1 += 1
-                        # values.extend(val1[index1:posLittleArr2inArr1])
+
             index1 = posLittleArr2inArr1
 
         while index1 < len(arr1) and index2 < len(arr2):
-            # print("inside big loop")
-            # firstn = time.time()*100000000
-            # print()
+
             if arr1[index1] > arr2[index2]:
                 intervals.append(arr2[index2])
                 if val1[index1 - 1] < val2[index2]:
@@ -348,7 +344,6 @@ class Skyline:
                 index1 += 1
                 index2 += 1
 
-        # print(val2)
         if index1 != len(arr1):
             intervals.extend(arr1[index1:])
             values.extend(val1[index1:-1])
@@ -356,7 +351,6 @@ class Skyline:
         elif index2 != len(arr2):
             intervals.extend(arr2[index2:])
             values.extend(val2[index2:-1])
-            # print("extending")
 
         if len(values) == len(intervals)-1:
             values.append(0)
@@ -364,6 +358,9 @@ class Skyline:
         return intervals, values
 
     def intersection(self, arr2, val2):
+        """
+        Mètode que permet al Skyline fer l'operació de intersecció amb un altre Skyline.
+        """
         index1 = 0
         index2 = 0
         arr1 = self.__intervalos
@@ -420,12 +417,8 @@ class Skyline:
 
         if len(values) == len(intervals)-1:
             values.append(0)
-        print(intervals)
-        print(values)
+
         flattenedIntervals, flattenedValues = flatten(intervals, values)
-        print()
-        print(flattenedIntervals)
-        print(flattenedValues)
 
         while len(flattenedValues) > 0 and flattenedValues[0] == 0:
             flattenedIntervals.pop(0)
@@ -438,18 +431,21 @@ class Skyline:
 
     def get_area(self):
         """
-        Mètode getter de l'atribut àrea
+        Mètode getter de l'atribut àrea.
         """
         return self.__area
 
     def get_height(self):
         """
-        Mètode getter de l'atribut height
+        Mètode getter de l'atribut height.
         """
         return self.__height
 
 
 def binary_search(list, val):
+    """
+    Funció que busca el valor val a la llista list i retorna on està, si no hi és, retorna la posició on hauria d'estar.
+    """
     low = 0
     high = len(list)
     while low < high:
@@ -463,6 +459,9 @@ def binary_search(list, val):
 
 
 def flatten(intervals, values):
+    """
+    Funció que \'aplana\' les dues llistes donades treient valors que es puguin considerar redundants i simplificant-les.
+    """
     flattenedIntervals = []
     flattenedIntervals.append(intervals[0])
     flattenedValues = []

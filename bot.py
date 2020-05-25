@@ -203,13 +203,13 @@ def leeElTexto(update, context):
   context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
-def sendPhoto(skyline, update, context):
+def sendPhoto(photoOfSkyline, update, context):
  """Funció que envia la imatge d'un Skyline a l'usuari."""
 
  context.bot.send_photo(
      chat_id=update.effective_chat.id,
-     photo=open(skyline, 'rb'))
- remove(skyline)
+     photo=open(photoOfSkyline, 'rb'))
+ remove(photoOfSkyline)
 
 
 def parse(message, userData, userId):

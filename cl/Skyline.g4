@@ -4,7 +4,8 @@ root: statement EOF;
 
 statement: ident ASSIGN expr                            # assignment 
 
-        | expr                                          # exprValue;
+        | expr                                          # exprValue
+        ;
 
 expr:
 	LP expr RP					# parenthesis
@@ -27,7 +28,7 @@ ident: ID;
 skyCreation: 	sky                                                                                                     //Simple
 		| LB sky (COMMA sky)* RB                                                                                //Compost
 		| LC integerValue COMMA integerValue COMMA integerValue COMMA integerValue COMMA integerValue RC        //Random
-	; 
+	        ; 
 
 sky: (LP integerValue COMMA integerValue COMMA integerValue RP);
 

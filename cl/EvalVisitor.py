@@ -18,7 +18,6 @@ class EvalVisitor(SkylineVisitor):
 
  def visitRoot(self, ctx: SkylineParser.RootContext):
   res = self.visit(ctx.statement())
-  print("final")
 
   # Si s'ha detectat algun error, retorna'l:
   if isinstance(res, str):
@@ -85,11 +84,9 @@ class EvalVisitor(SkylineVisitor):
     if height < 0:
      return "ERROR: L'alçada dels edificis que vols crear es negativa, que no és vàlid."
 
-    listOfSkylineValues.append(xmin)
-    listOfSkylineValues.append(height)
-    listOfSkylineValues.append(xmax)
+    listOfSkylineValues.append([xmin,height,xmax])
 
-   sky = Skyline(listOfSkylineValues, 0, type="complex")
+   sky = Skyline(listOfSkylineValues, type="complex")
 
    return sky
 
