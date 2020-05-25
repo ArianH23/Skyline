@@ -306,12 +306,20 @@ class Skyline:
         index2 = index1
         # print(intervals)
         # print(values)
-
+        # print(arr1)
+        # print(arr2)
+        # print()
+        # print(intervals)
+        # print(values)
         if index2 < len(arr2):
             # print("is less than")
             posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
             # print(posLittleArr2inArr1)
             # print("position = " +str(posLittleArr2inArr1))
+            # input()
+            # print(str(posLittleArr2inArr1 == len(arr1)) + "lo es?")
+            # print(str(overlapped)+ "over?")
+            # input()
             #The smallest number of arr2 is bigger than the largest in arr1
             if posLittleArr2inArr1 == len(arr1):
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
@@ -325,8 +333,24 @@ class Skyline:
             #else
             else:
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
-                values.extend(val1[index1:posLittleArr2inArr1])
+                if val2[index2-1] == 0:
+                    values.extend(val1[index1:posLittleArr2inArr1])
+                else:
+                    while index1 < posLittleArr2inArr1:
+                        # print(index1)
+                        
+                        if val2[index2-1] > val1[index1]:
+                            values.append(val2[index2-1])
+                        else:
+                            values.append(val1[index1])
+                        index1 +=1
+                        # values.extend(val1[index1:posLittleArr2inArr1])
             index1 = posLittleArr2inArr1
+
+        # print()
+        # print(intervals)
+        # print(values)
+        # input()
         # print("val index2 " + str(index2))
         # input()
         # print("bsearch: " + str(second1-first1))

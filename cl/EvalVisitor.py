@@ -69,7 +69,8 @@ class EvalVisitor(SkylineVisitor):
    return "ID \'" + id + "\' no trobat"
 
  def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
-     # Creacio de Skyline compost
+      
+  # Creacio de Skyline compost
   if ctx.LB():
 
    listOfSkylineValues = []
