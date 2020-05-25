@@ -89,9 +89,9 @@ class Skyline:
                 randomWidth = randint(1, ampladaMaxima)
 
                 if randomHeight > 0:
-                    newSky = Skyline(randomXMin, randomHeight,
-                                     randomXMin + randomWidth, asigna_atribs=False)
-                    firstSky += newSky
+
+                    firstSky += Skyline(randomXMin, randomHeight,
+                                        randomXMin + randomWidth, asigna_atribs=False)
 
                     if randomHeight > self.__height:
                         self.__height = randomHeight
