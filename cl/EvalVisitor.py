@@ -47,14 +47,11 @@ class EvalVisitor(SkylineVisitor):
   pickle.dump(self.ts, pickle_out)
   pickle_out.close()
 
-  # print(self.ts)
-  # img = sky.saveImage()
   return sky
 
  def visitExprValue(self, ctx: SkylineParser.ExprValueContext):
   res = self.visitChildren(ctx)
-  print("checking type")
-  print(type(res))
+
   return res
 
  def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
@@ -69,7 +66,7 @@ class EvalVisitor(SkylineVisitor):
    return "ID \'" + id + "\' no trobat"
 
  def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
-      
+
   # Creacio de Skyline compost
   if ctx.LB():
 
@@ -96,10 +93,6 @@ class EvalVisitor(SkylineVisitor):
 
    return sky
 
-  # Creacio de Skyline simple
-  elif ctx.sky(0):
-   return self.visitSky(ctx.sky(0))
-
   # Creacio de Skyline random
   elif ctx.LC():
 
@@ -120,6 +113,10 @@ class EvalVisitor(SkylineVisitor):
    sky = Skyline(buildings, height, width, xmin, xmax, type="random")
 
    return sky
+
+  # Creacio de Skyline simple
+  elif ctx.sky(0):
+   return self.visitSky(ctx.sky(0))
 
  def visitSky(self, ctx: SkylineParser.SkyContext):
   xmin = self.visit(ctx.integerValue(0))
@@ -143,11 +140,11 @@ class EvalVisitor(SkylineVisitor):
  def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
   return self.visit(ctx.expr())
 
-
  def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
   sky = self.visit(ctx.expr(0))
   val = self.visit(ctx.expr(1))
 
+  # Comprobació de si un dels dos valor visitats és un error.
   if isinstance(sky, str):
    return sky
 
@@ -157,14 +154,11 @@ class EvalVisitor(SkylineVisitor):
   ret = sky * val
   return ret
 
- # Visit a parse tree produced by SkylineParser#integerVal.
-
  def visitPosIntegerValue(self, ctx: SkylineParser.PosIntegerValueContext):
   value = int(ctx.INTVAL().getText())
 
   return value
 
- # Visit a parse tree produced by SkylineParser#negIntegerValue.
  def visitNegIntegerValue(self, ctx: SkylineParser.NegIntegerValueContext):
   value = int(ctx.INTVAL().getText())
 
@@ -175,6 +169,7 @@ class EvalVisitor(SkylineVisitor):
   sky = self.visit(ctx.expr(0))
   val = self.visit(ctx.expr(1))
 
+  # Comprobació de si un dels dos valor visitats és un error.
   if isinstance(sky, str):
    return sky
 
@@ -188,8 +183,6 @@ class EvalVisitor(SkylineVisitor):
   elif ctx.MINUS():
    ret = sky - val
    return ret
-
- # Visit a parse tree produced by SkylineParser#mirror.
 
  def visitMirror(self, ctx: SkylineParser.MirrorContext):
   sky = self.visit(ctx.expr())

@@ -112,7 +112,7 @@ def save(update, context):
        chat_id=update.effective_chat.id, text=message)
 
   else:
-   message = "El Skyline amb identificador ID: \'" + \
+   message = "El Skyline amb ID: \'" + \
        skyId + "\' no existeix en les teves dades."
    context.bot.send_message(
        chat_id=update.effective_chat.id, text=message)
