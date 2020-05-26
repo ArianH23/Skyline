@@ -13,7 +13,7 @@ class Skyline:
         # En aquest cas depenent de si param3 es buit:
         # param1 = xmin, param2 = height, param3 = xmax
         # param1 = llistaIntervals, param2 = llistaValues
-        if type == None:
+        if type is None:
             if param3 is None:
                 self.__intervalos = param1
                 self.__values = param2
@@ -22,7 +22,7 @@ class Skyline:
                 self.__intervalos = [param1, param3]
                 self.__values = [param2] + [0]
 
-            if color == None:
+            if color is None:
                 # Avoid creating a white Skyline which would not be seen in the plot.
                 red = min(0.85, random())
                 green = min(0.85, random())
@@ -32,7 +32,7 @@ class Skyline:
             else:
                 self.__color = color
 
-            if asigna_atribs == True:
+            if asigna_atribs:
                 self.__area = self.__calculaArea()
                 self.__height = max(self.__values)
                 self.__intervalos, self.__values = flatten(
@@ -43,7 +43,6 @@ class Skyline:
         # param1 = llistaDeIntervalsIHeightsDe Skylines, de la forma:
         # [[xmin1, height1, xmax1], [xmin2, height2, xmax2]...]
         elif type == "complex":
-            print(param1)
             firstSky = Skyline(param1[0][0], param1[0][1], param1[0][2])
 
             self.__height = param1[0][1]
@@ -67,6 +66,7 @@ class Skyline:
         # En aquest cas:
         # param1 = nombreDeEdificis, param2 = alçadaMaximaDelsEdificis, param3 = ampladaMaximaDelsEdificis
         elif type == "random":
+
             maxFinal = xmax-param3
 
             nombreDeEdificis = param1
@@ -95,6 +95,12 @@ class Skyline:
 
                     if randomHeight > self.__height:
                         self.__height = randomHeight
+
+                # Optimización: cada 512 Skylines se hace un flatten con
+                # los valores que tenga firstSky, esto facilita las siguientes uniones.
+                if i & ((1 << 9) - 1) == 0:
+                    firstSky.__intervalos, firstSky.__values = flatten(
+                        firstSky.__intervalos, firstSky.__values)
 
             self.__intervalos, self.__values = flatten(
                 firstSky.__intervalos, firstSky.__values)
@@ -137,6 +143,9 @@ class Skyline:
         """
         Overload de l'operació iadd de la classe Skyline.
         """
+        # Este overload es necesario para evitar calculos innecesarios cuando
+        # se hacen uniones que podrian ser costosas, podemos suponer que other es un Skyline.
+
         if isinstance(other, Skyline):
             arr2 = other.__intervalos
             val2 = other.__values
@@ -252,15 +261,19 @@ class Skyline:
         arr1 = self.__intervalos
         val1 = self.__values
 
-        # Si algun dels Skylines és buit, retorna l'altre Skyline.
+        # Si alguno de los Skylines es vacio, retorna el otro Skyline, si los dos lo son, da igual el que se retorne.
         if val1[0] == 0:
             return arr2, val2
         elif val2[0] == 0:
             return arr1, val1
 
+        # La lista de intervalos y valores a devolver
         intervals = []
         values = []
+
+        # Comprobador de si se entra en el siguiente bucle
         overlapped = False
+        # Si tienen los mismos intervalos iniciales, estos se unifican con el value mas alto de los dos.
         while index1 < len(arr1) and index1 < len(arr2) and arr1[index1] == arr2[index1]:
             overlapped = True
             values.append(max(val1[index1], val2[index1]))
@@ -268,10 +281,8 @@ class Skyline:
 
             index1 += 1
 
-        # For the whole operation to work, the program has to take the
-        # array with the first smallest value as a "reference" to check
-        # the values of the other array, this conditional makes sure that
-        # arr1 is the array which has the smallest first value
+        # Esto asegura que el siguiente elemento de arr1 a
+        # analizar sea más pequeño que el siguiente que tenga arr2
         if index1 < len(arr1) and index1 < len(arr2):
 
             if arr2[index1] < arr1[index1]:
@@ -281,26 +292,55 @@ class Skyline:
 
         index2 = index1
 
+        # Si el indice no sobresale de arr2
         if index2 < len(arr2):
+            # Busca donde iria en arr1 el valor de arr2[index2]
             posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
 
-            # The smallest number of arr2 is bigger than the largest in arr1
+            # Si la posición encontrada es mayor que la lista arr1
             if posLittleArr2inArr1 == len(arr1):
+                # Añade los intervalos de arr1 a la lista de intervalos resultantes.
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
-                values.extend(val1[index1:posLittleArr2inArr1-1])
 
+                # Si el valor que tiene val2[index2-1] es 0, y por lo tanto no hay
+                # edificio en el intervalo que habría entre arr1[index1] y arr2[index2] por parte de arr2,
+                # simplemente extiende los valores de val1 sobre la lista final de valores.
+                if val2[index2-1] == 0:
+                    values.extend(val1[index1:posLittleArr2inArr1-1])
+
+                # En caso contrario, al extenderla, se tiene que tener en cuenta
+                # cual es el valor de val2[index2-1] al extender la lista
+                else:
+                    while index1 < posLittleArr2inArr1-1:
+
+                        if val2[index2-1] > val1[index1]:
+                            values.append(val2[index2-1])
+                        else:
+                            values.append(val1[index1])
+                        index1 += 1
+
+                # Si no se entro en el primer bucle, no exite la posibilidad de que un
+                # Skyline se sobreponga sobre el otro
                 if not overlapped:
                     values.append(0)
 
+                # Es posible que se sobrepongan
                 else:
                     values.append(val2[index2-1])
-            # else
+
+            # Si no es así
             else:
+                # Añade los intervalos de arr1 a la lista de intervalos resultantes.
                 intervals.extend(arr1[index1:posLittleArr2inArr1])
 
+                # Si el valor que tiene val2[index2-1] es 0, y por lo tanto no hay
+                # edificio en el intervalo que habría entre arr1[index1] y arr2[index2] por parte de arr2,
+                # simplemente extiende los valores de val1 sobre la lista final de valores.
                 if val2[index2-1] == 0:
                     values.extend(val1[index1:posLittleArr2inArr1])
 
+                # En caso contrario, al extenderla, se tiene que tener en cuenta
+                # cual es el valor de val2[index2-1] al extender la lista
                 else:
                     while index1 < posLittleArr2inArr1:
 
@@ -311,39 +351,45 @@ class Skyline:
                         index1 += 1
 
             index1 = posLittleArr2inArr1
-
+        # Bucle principal
         while index1 < len(arr1) and index2 < len(arr2):
 
             if arr1[index1] > arr2[index2]:
-                intervals.append(arr2[index2])
-                if val1[index1 - 1] < val2[index2]:
 
+                intervals.append(arr2[index2])
+                # Agrega el value mayor entre val1[index1 - 1] y val2[index2] a la
+                # lista de valores final ya que se pueden estar solapando.
+                if val1[index1 - 1] < val2[index2]:
                     values.append(val2[index2])
+
                 else:
                     values.append(val1[index1-1])
+
                 index2 += 1
 
             elif arr1[index1] < arr2[index2]:
 
                 intervals.append(arr1[index1])
-                # "if index2 > 0" It is not necessary to check this conditions, since if
-                # index2 == 0 then index2-1 == -1 and the elem at post -1 of val2 is 0
-                # which is the neutral value of the whole operation
+                # Agrega el value mayor entre val1[index1] y val2[index2 -1] a la
+                # lista de valores final ya que se pueden estar solapando.
                 if val2[index2 - 1] > val1[index1]:
                     values.append(val2[index2 - 1])
+
                 else:
                     values.append(val1[index1])
 
                 index1 += 1
 
+            # Si ambos intervalos son iguales
             elif arr1[index1] == arr2[index2]:
-
+                # Se unifican con el valor máximo
                 values.append(max(val1[index1], val2[index2]))
                 intervals.append(arr1[index1])
 
                 index1 += 1
                 index2 += 1
 
+        # Si quedan valores no visitados en alguna de las dos listas
         if index1 != len(arr1):
             intervals.extend(arr1[index1:])
             values.extend(val1[index1:-1])
@@ -352,6 +398,7 @@ class Skyline:
             intervals.extend(arr2[index2:])
             values.extend(val2[index2:-1])
 
+        # Si por algun motivo ha faltado añadir el último valor 0 en la lista de valores:
         if len(values) == len(intervals)-1:
             values.append(0)
 
@@ -362,31 +409,41 @@ class Skyline:
         Mètode que permet al Skyline fer l'operació de intersecció amb un altre Skyline.
         """
         index1 = 0
-        index2 = 0
+
         arr1 = self.__intervalos
         val1 = self.__values
 
+        # La lista de intervalos y valores a devolver
         intervals = []
         values = []
 
-        while index1 < len(arr1) and index2 < len(arr2) and arr1[index1] == arr2[index2]:
+        # Si tienen los mismos intervalos iniciales, estos se unifican con el value mas bajo de los dos.
+        while index1 < len(arr1) and index1 < len(arr2) and arr1[index1] == arr2[index1]:
 
-            values.append(min(val1[index1], val2[index2]))
+            values.append(min(val1[index1], val2[index1]))
             intervals.append(arr1[index1])
 
-            index1 = index1 + 1
-            index2 = index2 + 1
+            index1 += 1
 
-        if index1 < len(arr1) and index2 < len(arr2):
-            if arr2[index2] < arr1[index1]:
+        # Esto asegura que el siguiente elemento de arr1 a
+        # analizar sea más pequeño que el siguiente que tenga arr2
+        if index1 < len(arr1) and index1 < len(arr2):
+
+            if arr2[index1] < arr1[index1]:
+
                 arr1, arr2 = arr2, arr1
-                index1, index2 = index2, index1
                 val1, val2 = val2, val1
 
+        index2 = index1
+
+        # Bucle principal
         while index1 != len(arr1) and index2 != len(arr2):
 
             if arr1[index1] > arr2[index2]:
+
                 intervals.append(arr2[index2])
+                # Coges el value minimo de los dos posibles
+                # entre val1[index1 - 1] y val2[index2]
                 if val1[index1 - 1] > val2[index2]:
 
                     values.append(val2[index2])
@@ -397,9 +454,8 @@ class Skyline:
             elif arr1[index1] < arr2[index2]:
 
                 intervals.append(arr1[index1])
-                # "if index2 > 0" It is not necessary to check this conditions, since if
-                # index2 == 0 then index2-1 == -1 and the elem at post -1 of val2 is 0
-                # which is the neutral value of the whole operation
+                # Coges el value minimo de los dos posibles
+                # entre val1[index1] y val2[index2 - 1]
                 if val2[index2 - 1] < val1[index1]:
                     values.append(val2[index2 - 1])
                 else:
@@ -407,7 +463,9 @@ class Skyline:
 
                 index1 = index1 + 1
 
+            # Si ambos intervalos son iguales
             elif arr1[index1] == arr2[index2]:
+                # Se unifican con el valor mínimo
 
                 values.append(min(val1[index1], val2[index2]))
                 intervals.append(arr1[index1])
@@ -418,12 +476,16 @@ class Skyline:
         if len(values) == len(intervals)-1:
             values.append(0)
 
+        # 'Aplana' los resultados quitando valores innecesarios
         flattenedIntervals, flattenedValues = flatten(intervals, values)
 
+        # Quita aquellos valores iniciales vacios innecesarios
         while len(flattenedValues) > 0 and flattenedValues[0] == 0:
             flattenedIntervals.pop(0)
             flattenedValues.pop(0)
 
+        # Si el resultado final de la operación es vacio, devuelve
+        # una representación simple de un Skyline vacio
         if len(flattenedValues) == 0:
             return [0, 1], [0, 0]
 
