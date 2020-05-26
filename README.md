@@ -34,7 +34,7 @@ Dentro de la carpeta Data, cada usuario tiene su propia carpeta con el nombre de
 Un Skyline esta representado por 3 atributos principalmente:
 * Lista de intervalos: Una lista de enteros que representa los intervalos en los que hay edificios del mismo tamaño.
 * Lista de valores: Una lista de enteros que representa el valor de la altura entre cada intervalo. El valor en la posicion `i` de la lista de valores corresponderá a la altura que tendrá el edificio en los intervalos `i` e `i+1` en la lista de intervalos. El último valor de esta lista siempre será 0.
-* Tupla de colores: Una tupla que contiene los colores RGB del Skyline. Así siempre se representará de la misma forma cuando se quiera ver.
+* Tupla de colores: Una tupla que contiene los colores RGB del Skyline. Así siempre se representará siempre del mismo color sin poder provocar confusión al usuario.
 
 ### Métodos
 Las siguientes funciones estan documentadas en el codigo explicando como funcionan, ya que son más sofisticadas que las otras.
@@ -44,24 +44,21 @@ Estas otras funciones tienen una pequeña descripción en el código y no son di
 * Mirror: Invierte un Skyline
 * MoveOffset: Desplaza un Skyline dado un valor de desplazamiento.
 * Replicate: Replica consecutivamente un Skyline dado un valor de replicación.
-### Métodos estàticos
+### Métodos estáticos
 La clase Skyline tiene un par de métodos estaticos que ayudan en algunos cálculos.
 * binary_search(list, val): El método ya se sobreentiende, dado `val`, indica en que posición está en la lista `list`, si no se encuentra, devuelve la posición en la que debería ir.
-* flaten(intervals, values): El método quita valores que se puedan considerar redundantes dada una lista de intervalos y valores. Por ejemplo, si tenemos los siguientes valores:
+* flaten(intervals, values): El método quita valores que se puedan considerar redundantes dada una lista de intervalos y valores. Por ejemplo, si tenemos los siguientes valores del primer bloque, estos se transformarán en los del segundo bloque, que serían equivalentes:
 
-```python
-intervals = [0,4,5]
-values = [3,3,0]
-```
+    ```python
+    intervals = [0,4,5]
+    values = [3,3,0]
+    ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estos serian transformados en:
 
-```python
-intervals = [0,5]
-values = [3,0]
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Que serían equivalentes.
+    ```python
+    intervals = [0,5]
+    values = [3,0]
+    ```
 
 ## Comando adicional: /disk
 Este comando se ha creado para que el usuario pueda saber cuales son los Skylines guardados en disco ya que no habia otra forma de saberlo anteriormente.<br>
