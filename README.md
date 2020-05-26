@@ -23,33 +23,49 @@ Y finalmente, para empezar a interactuar con el bot por Telegram:
 ```bash
 $ python3 bot.py
 ```
+
+## Datos que tiene el usuario
+Dentro de la carpeta Data, cada usuario tiene su propia carpeta con el nombre de su identificador de Telegram en la que tiene alojados todos los datos con los que interactua. Hay 2 tipos de datos que puede tener en cualquier momento:
+* data.dict: que representa la tabla simbolos propia del usuario.
+* *.sky: que representa uno de los Skylines que el usuario ha guardado previamente en disco.
+
 ## Classe Skyline
 ### Atributos
 Un Skyline esta representado por 3 atributos principalmente:
 * Lista de intervalos: Una lista de enteros que representa los intervalos en los que hay edificios del mismo tamaño.
 * Lista de valores: Una lista de enteros que representa el valor de la altura entre cada intervalo. El valor en la posicion `i` de la lista de valores corresponderá a la altura que tendrá el edificio en los intervalos `i` e `i+1` en la lista de intervalos. El último valor de esta lista siempre será 0.
-* Tupla de colores: Una tupla que contiene los colores RGB del Skyline.
-### Métodos complejos
+* Tupla de colores: Una tupla que contiene los colores RGB del Skyline. Así siempre se representará de la misma forma cuando se quiera ver.
 
-#### Union
-Método de Union del Skyline self con otro pasado por parámetro.<br>
-Es difícil explicar en este documento como funciona exactamente este método. Por eso la explicación se encuentra en el código.
+### Métodos
+Las siguientes funciones estan documentadas en el codigo explicando como funcionan, ya que son más sofisticadas que las otras.
+* Union: Método de Union del Skyline self con otro pasado por parámetro.
+* Intersección: Método de Intersección del Skyline self con otro pasado por parámetro.
+Estas otras funciones tienen una pequeña descripción en el código y no son dificiles de comprender. Aún así tienen algun que otro comentario:
+* Mirror: Invierte un Skyline
+* MoveOffset: Desplaza un Skyline dado un valor de desplazamiento.
+* Replicate: Replica consecutivamente un Skyline dado un valor de replicación.
+### Métodos estàticos
+La clase Skyline tiene un par de métodos estaticos que ayudan en algunos cálculos.
+* binary_search(list, val): El método ya se sobreentiende, dado `val`, indica en que posición está en la lista `list`, si no se encuentra, devuelve la posición en la que debería ir.
+* flaten(intervals, values): El método quita valores que se puedan considerar redundantes dada una lista de intervalos y valores. Por ejemplo, si tenemos los siguientes valores:
 
-#### Intersección
-Método de Intersección del Skyline self con otro pasado por parámetro.<br>
-Es difícil explicar en este documento como funciona exactamente este método. Por eso la explicación se encuentra en el código.
+```python
+intervals = [0,4,5]
+values = [3,3,0]
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estos serian transformados en:
+
+```python
+intervals = [0,5]
+values = [3,0]
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Que serían equivalentes.
 
 ## Comando adicional: /disk
 Este comando se ha creado para que el usuario pueda saber cuales son los Skylines guardados en disco ya que no habia otra forma de saberlo anteriormente.<br>
 Para usarlo basta con enviar `/disk` al bot y dependiendo de si el usuario tiene o no Skylines en disco, se le mostrará el nombre de aquellos o no.
-
-### Métodos estàticos
-La clase Skyline tiene un par de métodos estaticos que ayudan en algunos calculos.
-#### binary_search(list, val)
-El método ya se sobreentiende, dado `val`, indica en que posición está en la lista `list`, si no se encuentra, devuelve la posición en la que debería ir.
-#### flaten(intervals, values)
-
-
 ## Built With
 
 * [ANTLR4](https://www.antlr.org/) - ANother Tool for Language Recognition

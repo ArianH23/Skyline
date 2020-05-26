@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 from random import randint, random
+import time
 
 
 class Skyline:
@@ -14,10 +15,11 @@ class Skyline:
         # param1 = xmin, param2 = height, param3 = xmax
         # param1 = llistaIntervals, param2 = llistaValues
         if type is None:
+            # Primer tipus de creacio especificada
             if param3 is None:
                 self.__intervalos = param1
                 self.__values = param2
-
+            # Segon tipus de creacio especificada
             else:
                 self.__intervalos = [param1, param3]
                 self.__values = [param2] + [0]
@@ -31,7 +33,7 @@ class Skyline:
                 self.__color = (red, green, blue)
             else:
                 self.__color = color
-
+            # Dependiendo de asigna_atribs, se haran calculos que puedan ser necesarios o no.
             if asigna_atribs:
                 self.__area = self.__calculaArea()
                 self.__height = max(self.__values)
@@ -43,6 +45,7 @@ class Skyline:
         # param1 = llistaDeIntervalsIHeightsDe Skylines, de la forma:
         # [[xmin1, height1, xmax1], [xmin2, height2, xmax2]...]
         elif type == "complex":
+
             firstSky = Skyline(param1[0][0], param1[0][1], param1[0][2])
 
             self.__height = param1[0][1]
@@ -55,6 +58,12 @@ class Skyline:
 
                     if param1[i][1] > self.__height:
                         self.__height = param1[i][1]
+
+                # Optimización: cada 512 Skylines se hace un flatten con
+                # los valores que tenga firstSky, esto facilita las siguientes uniones.
+                if i & ((1 << 9) - 1) == 0:
+                    firstSky.__intervalos, firstSky.__values = flatten(
+                        firstSky.__intervalos, firstSky.__values)
 
             self.__intervalos, self.__values = flatten(
                 firstSky.__intervalos, firstSky.__values)
@@ -109,7 +118,7 @@ class Skyline:
 
     def __calculaArea(self):
         """
-        Mètode que calcula l'àrea del Skyline.
+        Mètode privat que calcula l'àrea del Skyline.
         """
         area = 0
         intervalos = self.__intervalos
@@ -127,6 +136,7 @@ class Skyline:
         """
         Overload de l'operació add de la classe Skyline.
         """
+        # Cas en el que es fa una unió
         if isinstance(other, Skyline):
             arr2 = other.__intervalos
             val2 = other.__values
@@ -134,6 +144,7 @@ class Skyline:
 
             return Skyline(intervalos, values)
 
+        # Cas en el que es fa un desplaçament positiu
         elif isinstance(other, int):
             intervalOff = self.moveOffset(other)
 
@@ -143,9 +154,10 @@ class Skyline:
         """
         Overload de l'operació iadd de la classe Skyline.
         """
-        # Este overload es necesario para evitar calculos innecesarios cuando
-        # se hacen uniones que podrian ser costosas, podemos suponer que other es un Skyline.
+        # Aques overload es necessari per evitar calculs innecessaris quan
+        # es fan unions que podien ser costoses, podem suposar que other és un Skyline.
 
+        # Cas en el que es fa una unió
         if isinstance(other, Skyline):
             arr2 = other.__intervalos
             val2 = other.__values
@@ -157,6 +169,7 @@ class Skyline:
         """
         Overload de l'operació sub de la classe Skyline.
         """
+        # Cas en el que es fa un desplaçament negatiu
         if isinstance(other, int):
             intervalOff = self.moveOffset(-other)
 
@@ -166,6 +179,8 @@ class Skyline:
         """
         Overload de l'operació mul de la classe Skyline.
         """
+
+        # Cas en el que es fa una intersecció
         if isinstance(other, Skyline):
             arr2 = other.__intervalos
             val2 = other.__values
@@ -173,7 +188,7 @@ class Skyline:
             intervalos, values = self.intersection(arr2, val2)
 
             return Skyline(intervalos, values)
-
+        # Cas en el que es fa una replicació
         elif isinstance(other, int):
             intervals, values = self.replicate(other)
             return Skyline(intervals, values, color=self.__color)
@@ -182,11 +197,16 @@ class Skyline:
         """
         Overload de l'operació neg de la classe Skyline.
         """
+        # Cas en el que es fa una operació mirror
         intervals, values = self.mirror()
         return Skyline(intervals, values, color=self.__color)
 
     def mirror(self):
-        """Mètode que permet a un Skyline fer l'operació de mirror sobre ell mateix."""
+        """
+        Mètode que permet a un Skyline fer l'operació de mirror sobre ell mateix.
+        Aquesta basicament consisteix en mantenir els intervals minims i màxims
+        i girar els tamanys dels edificis.
+        """
         intervalsDistance = []
         reversedValues = self.__values[:-1]
         reversedValues.reverse()
@@ -214,6 +234,7 @@ class Skyline:
     def moveOffset(self, offset):
         """
         Mètode que permet al Skyline fer l'operació de desplaçament donat un offset.
+        Basicament consisteix en moure tots els intervals amb l'offset donat.
         """
         intervals = [x + offset for x in self.__intervalos]
 
@@ -222,6 +243,7 @@ class Skyline:
     def replicate(self, rep):
         """
         Mètode que permet al Skyline fer l'operació de replicació donat un nombre de repeticions.
+        Desplaça els intervals pel numero de rep donat, i multiplica la llista de values per rep.
         """
         distance = self.__intervalos[-1] - self.__intervalos[0]
         intervalsToAppend = self.__intervalos[1:]
@@ -351,6 +373,11 @@ class Skyline:
                         index1 += 1
 
             index1 = posLittleArr2inArr1
+        # El objetivo principal de todo lo que se ha hecho anteriormente es
+        # utilizar una unica funcion extend en vez de varios appends si es posible,
+        # eso aumenta muchisimo la eficiencia de la operacion en Skylines grandes
+        # en los que se les une un unico edificio.
+
         # Bucle principal
         while index1 < len(arr1) and index2 < len(arr2):
 

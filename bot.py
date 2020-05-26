@@ -6,12 +6,12 @@ from antlr4 import *
 from cl.EvalVisitor import *
 from cl.SkylineParser import *
 
-from os import path, remove, mkdir
+from os import path, remove, mkdir, listdir
 import pickle
 
 
 def start(update, context):
-    """Funció de l'ordre /start. Que saluda a l'usuari."""
+    """Funció de la comanda /start. Que saluda a l'usuari."""
 
     username = update.effective_chat.first_name
     message = "SkylineBot!\nBenvingut " + username + \
@@ -20,7 +20,7 @@ def start(update, context):
 
 
 def help(update, context):
-    """Funció de l'ordre /help. Que mostra totes les ordres possibles del bot."""
+    """Funció de la comanda /help. Que mostra totes les ordres possibles del bot."""
 
     message = "A continuació tens un llistat de les comandes que es poden executar en aquest bot:\n\n"
     message += "/start: Es mostrarà el missatge inicial del bot.\n\n"
@@ -35,7 +35,7 @@ def help(update, context):
 
 
 def author(update, context):
-    """Funció de l'ordre /author. Que mostra l'autor del bot i el seu correu."""
+    """Funció de la comanda /author. Que mostra l'autor del bot i el seu correu."""
 
     message = "SkylineBot!\n@ Rodrigo Arian Huapaya Sierra, rodrigo.arian.huapaya@est.fib.upc.edu"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
@@ -161,6 +161,39 @@ def load(update, context):
             chat_id=update.effective_chat.id, text=message)
 
 
+def disk(update, context):
+    """Funció de la comanda /disk. Que mostra els identificadors de l'usuari a disc."""
+
+    userId = str(update.message.from_user['id'])
+
+    pathOfUser = "Data/" + userId
+
+    if path.exists(pathOfUser):
+        listOfSkies = []
+
+        for file in listdir(pathOfUser):
+            if file.endswith(".sky"):
+                listOfSkies.append(file[:-4])
+
+        if len(listOfSkies) > 0:
+            message = "Aquesta és la llista de Skylines que tens actualment a disc:\n\n"
+
+            for sky in listOfSkies:
+                message += "<b>ID:</b> " + sky + "\n"
+
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)
+
+        else:
+            message = "No tens dades per mostrar a disc."
+            context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message)
+    else:
+        message = "No tens dades per mostrar a disc."
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=message)
+
+
 def leeElTexto(update, context):
     """
     Funció que es crida per defecte si no s'utilitza cap ordre.\n
@@ -248,6 +281,7 @@ dp.add_handler(CommandHandler('lst', lst))
 dp.add_handler(CommandHandler('clean', clean))
 dp.add_handler(CommandHandler('save', save))
 dp.add_handler(CommandHandler('load', load))
+dp.add_handler(CommandHandler('disk', disk))
 
 dp.add_handler(MessageHandler(Filters.text, leeElTexto))
 

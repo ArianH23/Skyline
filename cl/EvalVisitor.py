@@ -29,14 +29,11 @@ class EvalVisitor(SkylineVisitor):
 
         return img, height, area
 
-    def visitIdent(self, ctx: SkylineParser.IdentContext):
-        id = ctx.ID().getText()
-        return id
-
     def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
         ident = self.visit(ctx.ident())
         sky = self.visit(ctx.expr())
-
+        
+        # Comproba si sky és un error:
         if isinstance(sky, str):
             return sky
 
@@ -53,6 +50,56 @@ class EvalVisitor(SkylineVisitor):
 
         return res
 
+    def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
+        return self.visit(ctx.expr())
+
+    def visitMirror(self, ctx: SkylineParser.MirrorContext):
+        sky = self.visit(ctx.expr())
+        
+        # Comprobació de si sky és un error.
+        if isinstance(sky, str):
+            return sky
+
+        return -sky
+
+    def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
+        sky = self.visit(ctx.expr(0))
+        val = self.visit(ctx.expr(1))
+
+        # Comprobació de si un dels dos valor visitats és un error.
+        if isinstance(sky, str):
+            return sky
+
+        elif isinstance(val, str):
+            return val
+
+        ret = sky * val
+        return ret
+
+    def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
+
+        sky = self.visit(ctx.expr(0))
+        val = self.visit(ctx.expr(1))
+
+        # Comprobació de si un dels dos valor visitats és un error.
+        if isinstance(sky, str):
+            return sky
+
+        elif isinstance(val, str):
+            return val
+
+        if ctx.PLUS():
+            ret = sky + val
+            return ret
+
+        elif ctx.MINUS():
+            ret = sky - val
+            return ret
+
+    def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
+
+        return self.visit(ctx.skyCreation())
+
     def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
         id = self.visit(ctx.ident())
 
@@ -64,8 +111,11 @@ class EvalVisitor(SkylineVisitor):
         else:
             return "ID \'" + id + "\' no trobat"
 
-    def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
+    def visitIdent(self, ctx: SkylineParser.IdentContext):
+        id = ctx.ID().getText()
+        return id
 
+    def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
         # Creacio de Skyline compost
         if ctx.LB():
 
@@ -130,27 +180,6 @@ class EvalVisitor(SkylineVisitor):
 
         return Skyline(xmin, height, xmax)
 
-    def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
-
-        return self.visit(ctx.skyCreation())
-
-    def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
-        return self.visit(ctx.expr())
-
-    def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
-        sky = self.visit(ctx.expr(0))
-        val = self.visit(ctx.expr(1))
-
-        # Comprobació de si un dels dos valor visitats és un error.
-        if isinstance(sky, str):
-            return sky
-
-        elif isinstance(val, str):
-            return val
-
-        ret = sky * val
-        return ret
-
     def visitPosIntegerValue(self, ctx: SkylineParser.PosIntegerValueContext):
         value = int(ctx.INTVAL().getText())
 
@@ -161,30 +190,3 @@ class EvalVisitor(SkylineVisitor):
 
         return -value
 
-    def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
-
-        sky = self.visit(ctx.expr(0))
-        val = self.visit(ctx.expr(1))
-
-        # Comprobació de si un dels dos valor visitats és un error.
-        if isinstance(sky, str):
-            return sky
-
-        elif isinstance(val, str):
-            return val
-
-        if ctx.PLUS():
-            ret = sky + val
-            return ret
-
-        elif ctx.MINUS():
-            ret = sky - val
-            return ret
-
-    def visitMirror(self, ctx: SkylineParser.MirrorContext):
-        sky = self.visit(ctx.expr())
-
-        if isinstance(sky, str):
-            return sky
-
-        return -sky
