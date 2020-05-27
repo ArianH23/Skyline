@@ -9,6 +9,9 @@ from cl.SkylineParser import *
 from os import path, remove, mkdir, listdir
 import pickle
 
+# declara una constant amb el access token que llegeix de token.txt
+TOKEN = open('token.txt').read().strip()
+
 
 def start(update, context):
     """Funció de la comanda /start. Que saluda a l'usuari."""
@@ -30,6 +33,7 @@ def help(update, context):
     message += "/clean: Es borraran tots els identificadors dels Skylines que tinguis definits en aquell moment.\n\n"
     message += "/save id: Es guardarà el Skyline que tinguis definit amb l'identificador 'id'.\n\n"
     message += "/load id: Es carregarà el Skyline que tinguis a disc amb l'identificador 'id'.\n\n"
+    message += "/disk: Es mostrarà els Skylines que tinguis a dic en aquell moment.\n\n"
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
@@ -283,10 +287,6 @@ def parse(message, userData, userId):
     print("parsing done")
 
     return imgOrError, height, area
-
-
-# declara una constant amb el access token que llegeix de token.txt
-TOKEN = open('token.txt').read().strip()
 
 
 # crea objectes per treballar amb Telegram

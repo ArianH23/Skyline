@@ -5,6 +5,7 @@ import time
 
 class Skyline:
 
+    # MÈTODE CREADOR
     def __init__(self, param1, param2=None, param3=None, xmin=None, xmax=None, color=None, type=None, asigna_atribs=True):
         """
         Mètode creador de la classe Skyline.
@@ -37,7 +38,7 @@ class Skyline:
             if asigna_atribs:
                 self.__area = self.__calculaArea()
                 self.__height = max(self.__values)
-                self.__intervalos, self.__values = flatten(
+                self.__intervalos, self.__values = Skyline.__flatten(
                     self.__intervalos, self.__values)
 
         # Creació de Skyline compost
@@ -62,10 +63,10 @@ class Skyline:
                 # Optimización: cada 512 Skylines se hace un flatten con
                 # los valores que tenga firstSky, esto facilita las siguientes uniones.
                 if i & ((1 << 9) - 1) == 0:
-                    firstSky.__intervalos, firstSky.__values = flatten(
+                    firstSky.__intervalos, firstSky.__values = Skyline.__flatten(
                         firstSky.__intervalos, firstSky.__values)
 
-            self.__intervalos, self.__values = flatten(
+            self.__intervalos, self.__values = Skyline.__flatten(
                 firstSky.__intervalos, firstSky.__values)
 
             self.__color = firstSky.__color
@@ -108,14 +109,86 @@ class Skyline:
                 # Optimización: cada 512 Skylines se hace un flatten con
                 # los valores que tenga firstSky, esto facilita las siguientes uniones.
                 if i & ((1 << 9) - 1) == 0:
-                    firstSky.__intervalos, firstSky.__values = flatten(
+                    firstSky.__intervalos, firstSky.__values = Skyline.__flatten(
                         firstSky.__intervalos, firstSky.__values)
 
-            self.__intervalos, self.__values = flatten(
+            self.__intervalos, self.__values = Skyline.__flatten(
                 firstSky.__intervalos, firstSky.__values)
             self.__color = firstSky.__color
             self.__area = self.__calculaArea()
 
+    # OVERLOADS DE LA CLASSE SKYLINE
+
+    def __add__(self, other):
+        """
+        Overload de l'operació add de la classe Skyline.
+        """
+        # Cas en el que es fa una unió
+        if isinstance(other, Skyline):
+            arr2 = other.__intervalos
+            val2 = other.__values
+            intervalos, values = self.__union(arr2, val2)
+
+            return Skyline(intervalos, values)
+
+        # Cas en el que es fa un desplaçament positiu
+        elif isinstance(other, int):
+            intervalOff = self.__moveOffset(other)
+
+            return Skyline(intervalOff, self.__values, color=self.__color)
+
+    def __iadd__(self, other):
+        """
+        Overload de l'operació iadd de la classe Skyline.
+        """
+        # Aques overload es necessari per evitar calculs innecessaris quan
+        # es fan unions que podien ser costoses, podem suposar que other és un Skyline.
+
+        # Cas en el que es fa una unió
+        if isinstance(other, Skyline):
+            arr2 = other.__intervalos
+            val2 = other.__values
+            intervalos, values = self.__union(arr2, val2)
+
+            return Skyline(intervalos, values, asigna_atribs=False)
+
+    def __sub__(self, other):
+        """
+        Overload de l'operació sub de la classe Skyline.
+        """
+        # Cas en el que es fa un desplaçament negatiu
+        if isinstance(other, int):
+            intervalOff = self.__moveOffset(-other)
+
+            return Skyline(intervalOff, self.__values, color=self.__color)
+
+    def __mul__(self, other):
+        """
+        Overload de l'operació mul de la classe Skyline.
+        """
+
+        # Cas en el que es fa una intersecció
+        if isinstance(other, Skyline):
+            arr2 = other.__intervalos
+            val2 = other.__values
+
+            intervalos, values = self.__intersection(arr2, val2)
+
+            return Skyline(intervalos, values)
+        # Cas en el que es fa una replicació
+        elif isinstance(other, int):
+            intervals, values = self.__replicate(other)
+            return Skyline(intervals, values, color=self.__color)
+
+    def __neg__(self):
+        """
+        Overload de l'operació neg de la classe Skyline.
+        """
+        # Cas en el que es fa una operació mirror
+        intervals, values = self.__mirror()
+        return Skyline(intervals, values, color=self.__color)
+
+    # MÈTODES PRIVATS
     def __calculaArea(self):
         """
         Mètode privat que calcula l'àrea del Skyline.
@@ -132,76 +205,7 @@ class Skyline:
 
         return area
 
-    def __add__(self, other):
-        """
-        Overload de l'operació add de la classe Skyline.
-        """
-        # Cas en el que es fa una unió
-        if isinstance(other, Skyline):
-            arr2 = other.__intervalos
-            val2 = other.__values
-            intervalos, values = self.union(arr2, val2)
-
-            return Skyline(intervalos, values)
-
-        # Cas en el que es fa un desplaçament positiu
-        elif isinstance(other, int):
-            intervalOff = self.moveOffset(other)
-
-            return Skyline(intervalOff, self.__values, color=self.__color)
-
-    def __iadd__(self, other):
-        """
-        Overload de l'operació iadd de la classe Skyline.
-        """
-        # Aques overload es necessari per evitar calculs innecessaris quan
-        # es fan unions que podien ser costoses, podem suposar que other és un Skyline.
-
-        # Cas en el que es fa una unió
-        if isinstance(other, Skyline):
-            arr2 = other.__intervalos
-            val2 = other.__values
-            intervalos, values = self.union(arr2, val2)
-
-            return Skyline(intervalos, values, asigna_atribs=False)
-
-    def __sub__(self, other):
-        """
-        Overload de l'operació sub de la classe Skyline.
-        """
-        # Cas en el que es fa un desplaçament negatiu
-        if isinstance(other, int):
-            intervalOff = self.moveOffset(-other)
-
-            return Skyline(intervalOff, self.__values, color=self.__color)
-
-    def __mul__(self, other):
-        """
-        Overload de l'operació mul de la classe Skyline.
-        """
-
-        # Cas en el que es fa una intersecció
-        if isinstance(other, Skyline):
-            arr2 = other.__intervalos
-            val2 = other.__values
-
-            intervalos, values = self.intersection(arr2, val2)
-
-            return Skyline(intervalos, values)
-        # Cas en el que es fa una replicació
-        elif isinstance(other, int):
-            intervals, values = self.replicate(other)
-            return Skyline(intervals, values, color=self.__color)
-
-    def __neg__(self):
-        """
-        Overload de l'operació neg de la classe Skyline.
-        """
-        # Cas en el que es fa una operació mirror
-        intervals, values = self.mirror()
-        return Skyline(intervals, values, color=self.__color)
-
-    def mirror(self):
+    def __mirror(self):
         """
         Mètode que permet a un Skyline fer l'operació de mirror sobre ell mateix.
         Aquesta basicament consisteix en mantenir els intervals minims i màxims
@@ -231,7 +235,7 @@ class Skyline:
 
         return finalIntervals, reversedValues
 
-    def moveOffset(self, offset):
+    def __moveOffset(self, offset):
         """
         Mètode que permet al Skyline fer l'operació de desplaçament donat un offset.
         Basicament consisteix en moure tots els intervals amb l'offset donat.
@@ -240,7 +244,7 @@ class Skyline:
 
         return intervals
 
-    def replicate(self, rep):
+    def __replicate(self, rep):
         """
         Mètode que permet al Skyline fer l'operació de replicació donat un nombre de repeticions.
         Desplaça els intervals pel numero de rep donat, i multiplica la llista de values per rep.
@@ -262,20 +266,7 @@ class Skyline:
         valuesToReplicate.append(0)
         return finalIntervals, valuesToReplicate
 
-    def saveImage(self):
-        """
-        Mètode que permet al Skyline guardar una imatge de la seva representació.
-        """
-        plt.hist(self.__intervalos, bins=self.__intervalos,
-                 weights=self.__values, color=self.__color)
-
-        pathOfImage = "img.png"
-        plt.savefig(pathOfImage)
-
-        plt.clf()
-        return pathOfImage
-
-    def union(self, arr2, val2):
+    def __union(self, arr2, val2):
         """
         Mètode que permet al Skyline fer l'operació d'unió amb un altre Skyline.
         """
@@ -317,7 +308,7 @@ class Skyline:
         # Si el indice no sobresale de arr2
         if index2 < len(arr2):
             # Busca donde iria en arr1 el valor de arr2[index2]
-            posLittleArr2inArr1 = binary_search(arr1, arr2[index2])
+            posLittleArr2inArr1 = Skyline.__binary_search(arr1, arr2[index2])
 
             # Si la posición encontrada es mayor que la lista arr1
             if posLittleArr2inArr1 == len(arr1):
@@ -431,7 +422,7 @@ class Skyline:
 
         return intervals, values
 
-    def intersection(self, arr2, val2):
+    def __intersection(self, arr2, val2):
         """
         Mètode que permet al Skyline fer l'operació de intersecció amb un altre Skyline.
         """
@@ -504,7 +495,8 @@ class Skyline:
             values.append(0)
 
         # 'Aplana' los resultados quitando valores innecesarios
-        flattenedIntervals, flattenedValues = flatten(intervals, values)
+        flattenedIntervals, flattenedValues = Skyline.__flatten(
+            intervals, values)
 
         # Quita aquellos valores iniciales vacios innecesarios
         while len(flattenedValues) > 0 and flattenedValues[0] == 0:
@@ -518,6 +510,7 @@ class Skyline:
 
         return flattenedIntervals, flattenedValues
 
+    # MÈTODES PÚBLICS
     def get_area(self):
         """
         Mètode getter de l'atribut àrea.
@@ -530,44 +523,58 @@ class Skyline:
         """
         return self.__height
 
+    def saveImage(self):
+        """
+        Mètode que permet al Skyline guardar una imatge de la seva representació.
+        """
+        plt.hist(self.__intervalos, bins=self.__intervalos,
+                 weights=self.__values, color=self.__color)
 
-def binary_search(list, val):
-    """
-    Funció que busca el valor val a la llista list i retorna on està, si no hi és, retorna la posició on hauria d'estar.
-    """
-    low = 0
-    high = len(list)
-    while low < high:
-        mid = (low+high)//2
+        pathOfImage = "img.png"
+        plt.savefig(pathOfImage)
 
-        if list[mid] < val:
-            low = mid+1
-        else:
-            high = mid
-    return low
+        plt.clf()
+        return pathOfImage
 
+    # MÈTODES PRIVATS ESTÀTICS
+    @staticmethod
+    def __binary_search(list, val):
+        """
+        Funció que busca el valor val a la llista list i retorna on està, si no hi és, retorna la posició on hauria d'estar.
+        """
+        low = 0
+        high = len(list)
+        while low < high:
+            mid = (low+high)//2
 
-def flatten(intervals, values):
-    """
-    Funció que \'aplana\' les dues llistes donades treient valors que es puguin considerar redundants i simplificant-les.
-    """
-    flattenedIntervals = []
-    flattenedIntervals.append(intervals[0])
-    flattenedValues = []
+            if list[mid] < val:
+                low = mid+1
+            else:
+                high = mid
+        return low
 
-    lastVal = values[0]
+    @staticmethod
+    def __flatten(intervals, values):
+        """
+        Funció que \'aplana\' les dues llistes donades treient valors que es puguin considerar redundants i simplificant-les.
+        """
+        flattenedIntervals = []
+        flattenedIntervals.append(intervals[0])
+        flattenedValues = []
 
-    for i in range(1, len(intervals)):
-        if i == len(intervals):
-            flattenedIntervals.append(intervals[i])
-            flattenedValues.append(lastVal)
+        lastVal = values[0]
 
-        if values[i] != lastVal:
-            flattenedIntervals.append(intervals[i])
-            flattenedValues.append(lastVal)
+        for i in range(1, len(intervals)):
+            if i == len(intervals):
+                flattenedIntervals.append(intervals[i])
+                flattenedValues.append(lastVal)
 
-            lastVal = values[i]
+            if values[i] != lastVal:
+                flattenedIntervals.append(intervals[i])
+                flattenedValues.append(lastVal)
 
-    flattenedValues.append(0)
+                lastVal = values[i]
 
-    return flattenedIntervals, flattenedValues
+        flattenedValues.append(0)
+
+        return flattenedIntervals, flattenedValues

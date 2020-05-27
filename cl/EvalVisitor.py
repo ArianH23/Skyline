@@ -6,8 +6,6 @@ from .SkylineParser import SkylineParser
 from .SkylineVisitor import *
 if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
-else:
-    from SkylineParser import SkylineParser
 
 
 class EvalVisitor(SkylineVisitor):
@@ -32,7 +30,7 @@ class EvalVisitor(SkylineVisitor):
     def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
         ident = self.visit(ctx.ident())
         sky = self.visit(ctx.expr())
-        
+
         # Comproba si sky és un error:
         if isinstance(sky, str):
             return sky
@@ -55,7 +53,7 @@ class EvalVisitor(SkylineVisitor):
 
     def visitMirror(self, ctx: SkylineParser.MirrorContext):
         sky = self.visit(ctx.expr())
-        
+
         # Comprobació de si sky és un error.
         if isinstance(sky, str):
             return sky
@@ -189,4 +187,3 @@ class EvalVisitor(SkylineVisitor):
         value = int(ctx.INTVAL().getText())
 
         return -value
-

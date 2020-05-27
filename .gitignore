@@ -7,7 +7,8 @@ Data/*
 *Parser*
 *SkylineVisitor*
 *.pdf
-Makefile
+M*
+*.tar
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

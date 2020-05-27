@@ -8,3 +8,7 @@ clean	:
 	rm Skyline.tokens
 	rm SkylineLexer*
 	rm SkylineP*
+tar:
+	rm -rf Data/*
+	tar -zcvf practica.tar cl/S* cl/EvalVisitor.py compromis.pdf bot.py README.md requirements.txt skyline.py Data
+
