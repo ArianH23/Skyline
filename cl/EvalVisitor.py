@@ -37,10 +37,6 @@ class EvalVisitor(SkylineVisitor):
 
         self.ts[ident] = sky
 
-        pickle_out = open(self.pathOfUserData, "wb")
-        pickle.dump(self.ts, pickle_out)
-        pickle_out.close()
-
         return sky
 
     def visitExprValue(self, ctx: SkylineParser.ExprValueContext):
@@ -102,8 +98,7 @@ class EvalVisitor(SkylineVisitor):
         id = self.visit(ctx.ident())
 
         if id in self.ts:
-            sky = self.ts.get(id)
-            print(id)
+            sky = self.ts[id]
             return sky
 
         else:

@@ -12,6 +12,8 @@ import pickle
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
 
+listOfDictsCurrentSession = {}
+
 
 def start(update, context):
     """Funció de la comanda /start. Que saluda a l'usuari."""
@@ -48,16 +50,17 @@ def author(update, context):
 def lst(update, context):
     """Funció de la comanda /lst. Que mostra els identificadors de l'usuari."""
     username = update.effective_chat.first_name
-    last_nameI = update.effective_chat.last_name[0]
+    last_nameI = ""
+    if not update.effective_chat.last_name is None:
+        last_nameI = update.effective_chat.last_name[0]
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
 
-    pathOfUserData = "Data/" + userId + "/data.dict"
-    if path.exists(pathOfUserData):
-        pickle_in = open(pathOfUserData, "rb")
-        userData = pickle.load(pickle_in)
-        print(userData)
+    if userId in listOfDictsCurrentSession:
+
+        userData = listOfDictsCurrentSession[userId]
+
         message = "Aquesta és la llista de identificadors que tens actualment a la teva taula de simbols:\n\n"
 
         for id, sky in userData.items():
@@ -77,15 +80,15 @@ def lst(update, context):
 def clean(update, context):
     """Funció de la comanda /clean. Que borra tots els identificadors de l'usuari."""
     username = update.effective_chat.first_name
-    last_nameI = update.effective_chat.last_name[0]
+    last_nameI = ""
+    if not update.effective_chat.last_name is None:
+        last_nameI = update.effective_chat.last_name[0]
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
 
-    pathOfUserData = "Data/" + userId + "/data.dict"
-
-    if path.exists(pathOfUserData):
-        remove(pathOfUserData)
+    if userId in listOfDictsCurrentSession:
+        del listOfDictsCurrentSession[userId]
 
         message = "Les teves dades s'han esborrat correctament!"
         context.bot.send_message(
@@ -99,21 +102,22 @@ def clean(update, context):
 def save(update, context):
     """Funció de la comanda /save. Que guarda l'identificador \'id\' que especifiqui l'usuari a disc."""
     username = update.effective_chat.first_name
-    last_nameI = update.effective_chat.last_name[0]
+    last_nameI = ""
+    if not update.effective_chat.last_name is None:
+        last_nameI = update.effective_chat.last_name[0]
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
     skyId = update.message.text.split()[1]
 
-    pathOfUserData = "Data/" + userId + "/data.dict"
     pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
 
-    if path.exists(pathOfUserData):
-        pickle_in_data = open(pathOfUserData, "rb")
-        userData = pickle.load(pickle_in_data)
+    if userId in listOfDictsCurrentSession:
+
+        userData = listOfDictsCurrentSession[userId]
 
         if skyId in userData:
-            skyToSave = userData.get(skyId)
+            skyToSave = userData[skyId]
 
             pickle_out_sky = open(pathOfUserSky, "wb")
             pickle.dump(skyToSave, pickle_out_sky)
@@ -140,33 +144,32 @@ def load(update, context):
     """Funció de la comanda /load. Que carrega l'identificador \'id\' de disc que especifiqui l'usuari i el borra de disc."""
 
     username = update.effective_chat.first_name
-    last_nameI = update.effective_chat.last_name[0]
+    last_nameI = ""
+    if not update.effective_chat.last_name is None:
+        last_nameI = update.effective_chat.last_name[0]    
+        
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
     skyId = update.message.text.split()[1]
 
-    pathOfUserData = "Data/" + userId + "/data.dict"
     pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
 
     userData = {}
 
     if path.exists(pathOfUserSky):
 
-        if path.exists(pathOfUserData):
-            pickle_in_data = open(pathOfUserData, "rb")
-            userData = pickle.load(pickle_in_data)
+        if userId in listOfDictsCurrentSession:
+            userData = listOfDictsCurrentSession[userId]
 
         pickle_in_sky = open(pathOfUserSky, "rb")
         sky = pickle.load(pickle_in_sky)
 
         userData[skyId] = sky
 
-        pickle_out = open(pathOfUserData, "wb")
-        pickle.dump(userData, pickle_out)
-        pickle_out.close()
-
         remove(pathOfUserSky)
+
+        listOfDictsCurrentSession[userId] = userData
 
         message = "S'ha carregat correctament el Skyline amb ID: \'" + \
             skyId + "\' a les teva taula de simbols i s'ha esborrat de disc!"
@@ -182,7 +185,9 @@ def disk(update, context):
     """Funció de la comanda /disk. Que mostra els identificadors de l'usuari a disc."""
 
     username = update.effective_chat.first_name
-    last_nameI = update.effective_chat.last_name[0]
+    last_nameI = ""
+    if not update.effective_chat.last_name is None:
+        last_nameI = update.effective_chat.last_name[0]
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -193,8 +198,8 @@ def disk(update, context):
         listOfSkies = []
 
         for file in listdir(pathOfUser):
-            if file.endswith(".sky"):
-                listOfSkies.append(file[:-4])
+            # Suposarem que només hi ha Skylines a la seva carpeta
+            listOfSkies.append(file[:-4])
 
         if len(listOfSkies) > 0:
             message = "Aquesta és la llista de Skylines que tens actualment a disc:\n\n"
@@ -225,27 +230,26 @@ def leeElTexto(update, context):
     message = update.message.text
     print(message)
     username = update.effective_chat.first_name
-    last_nameI = update.effective_chat.last_name[0]
+    last_nameI = ""
+    if not update.effective_chat.last_name is None:
+        last_nameI = update.effective_chat.last_name[0]
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
 
     pathOfUser = "Data/" + userId
-    pathOfUserData = "Data/" + userId + "/data.dict"
 
     userData = {}
 
-    if path.exists(pathOfUser):
+    if userId in listOfDictsCurrentSession:
+        userData = listOfDictsCurrentSession[userId]
 
-        if path.exists(pathOfUserData):
-
-            pickle_in = open(pathOfUserData, "rb")
-            userData = pickle.load(pickle_in)
-
-    else:
+    if not path.exists(pathOfUser):
         mkdir(pathOfUser)
 
     imgOrError, height, area = parse(message, userData, userId)
+
+    listOfDictsCurrentSession[userId] = userData
 
     # Si height és -1, hi ha hagut un error i es comunica d'ell a l'usuari.
     if height == -1:

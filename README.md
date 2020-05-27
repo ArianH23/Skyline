@@ -24,11 +24,13 @@ Y finalmente, para empezar a interactuar con el bot por Telegram:
 $ python3 bot.py
 ```
 
-## Datos que tiene el usuario
-Dentro de la carpeta Data, cada usuario tiene su propia carpeta, para identificar cual es la asignada de cada usuario, el nombre de esta se forma a partir del primer nombre del usuario, la inicial de su apellido, y los 5 ultimos digitos de su identificador de Telegram. Allá tendrá alojados todos sus datos. Hay 2 tipos distintos de datos que puede tener en cualquier momento:
-* data.dict: que representa la tabla simbolos propia del usuario.
-* *.sky: que representa uno de los Skylines que el usuario ha guardado previamente en disco.
+## Gestión de datos
+Para que la gestión de datos funcione correctamente es necesario que exista la carpeta Data. Dentro de esta, cada usuario tiene su propia carpeta, para identificar cuál es la asignada a cada usuario, el nombre de esta se forma a partir del primer nombre del usuario, la inicial de su apellido (si es que tiene), y los 5 ultimos digitos de su identificador de Telegram. Allá tendrá alojados todos sus datos. Que en principio únicamente serán ficheros con la extensión `.sky` que podrán cargar en su tabla de simbolos:
 
+* *.sky :&nbsp; Fichero que representa uno de los Skylines que el usuario ha guardado previamente en disco usando la comanda `/save id`.
+
+Para ver la lista de ficheros de este tipo que el usuario tiene actualmente en disco se ha añadido un nuevo comando `/disk` para evitar confusiones que se explica más abajo.<br>
+Para cargar el sky en la tbla de simbolos actual basta con usar `load id`.
 ## Classe Skyline
 ### Atributos
 Un Skyline esta representado por 3 atributos principalmente:
