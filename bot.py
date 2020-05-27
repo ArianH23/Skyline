@@ -43,15 +43,18 @@ def author(update, context):
 
 def lst(update, context):
     """Funció de la comanda /lst. Que mostra els identificadors de l'usuari."""
+    username = update.effective_chat.first_name
+    last_nameI = update.effective_chat.last_name[0]
+    id = str(update.message.from_user['id'])[-5:]
 
-    userId = str(update.message.from_user['id'])
+    userId = username + last_nameI + id
 
     pathOfUserData = "Data/" + userId + "/data.dict"
     if path.exists(pathOfUserData):
         pickle_in = open(pathOfUserData, "rb")
         userData = pickle.load(pickle_in)
         print(userData)
-        message = "Aquesta és la llista de identificadors que tens actualment:\n\n"
+        message = "Aquesta és la llista de identificadors que tens actualment a la teva taula de simbols:\n\n"
 
         for id, sky in userData.items():
             message += "<b>ID:</b> " + id + \
@@ -62,15 +65,18 @@ def lst(update, context):
             chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)
 
     else:
-        message = "No tens dades per mostrar."
+        message = "No tens dades per mostrar a la teva taula de simbols."
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
 
 
 def clean(update, context):
     """Funció de la comanda /clean. Que borra tots els identificadors de l'usuari."""
+    username = update.effective_chat.first_name
+    last_nameI = update.effective_chat.last_name[0]
+    id = str(update.message.from_user['id'])[-5:]
 
-    userId = str(update.message.from_user['id'])
+    userId = username + last_nameI + id
 
     pathOfUserData = "Data/" + userId + "/data.dict"
 
@@ -88,8 +94,11 @@ def clean(update, context):
 
 def save(update, context):
     """Funció de la comanda /save. Que guarda l'identificador \'id\' que especifiqui l'usuari a disc."""
+    username = update.effective_chat.first_name
+    last_nameI = update.effective_chat.last_name[0]
+    id = str(update.message.from_user['id'])[-5:]
 
-    userId = str(update.message.from_user['id'])
+    userId = username + last_nameI + id
     skyId = update.message.text.split()[1]
 
     pathOfUserData = "Data/" + userId + "/data.dict"
@@ -126,7 +135,11 @@ def save(update, context):
 def load(update, context):
     """Funció de la comanda /load. Que carrega l'identificador \'id\' de disc que especifiqui l'usuari i el borra de disc."""
 
-    userId = str(update.message.from_user['id'])
+    username = update.effective_chat.first_name
+    last_nameI = update.effective_chat.last_name[0]
+    id = str(update.message.from_user['id'])[-5:]
+
+    userId = username + last_nameI + id
     skyId = update.message.text.split()[1]
 
     pathOfUserData = "Data/" + userId + "/data.dict"
@@ -152,7 +165,7 @@ def load(update, context):
         remove(pathOfUserSky)
 
         message = "S'ha carregat correctament el Skyline amb ID: \'" + \
-            skyId + "\' a les teves dades i s'ha esborrat de disc!"
+            skyId + "\' a les teva taula de simbols i s'ha esborrat de disc!"
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
     else:
@@ -164,7 +177,11 @@ def load(update, context):
 def disk(update, context):
     """Funció de la comanda /disk. Que mostra els identificadors de l'usuari a disc."""
 
-    userId = str(update.message.from_user['id'])
+    username = update.effective_chat.first_name
+    last_nameI = update.effective_chat.last_name[0]
+    id = str(update.message.from_user['id'])[-5:]
+
+    userId = username + last_nameI + id
 
     pathOfUser = "Data/" + userId
 
@@ -203,8 +220,11 @@ def leeElTexto(update, context):
 
     message = update.message.text
     print(message)
+    username = update.effective_chat.first_name
+    last_nameI = update.effective_chat.last_name[0]
+    id = str(update.message.from_user['id'])[-5:]
 
-    userId = str(update.message.from_user['id'])
+    userId = username + last_nameI + id
 
     pathOfUser = "Data/" + userId
     pathOfUserData = "Data/" + userId + "/data.dict"
@@ -212,10 +232,11 @@ def leeElTexto(update, context):
     userData = {}
 
     if path.exists(pathOfUser):
+
         if path.exists(pathOfUserData):
+
             pickle_in = open(pathOfUserData, "rb")
             userData = pickle.load(pickle_in)
-            print(userData)
 
     else:
         mkdir(pathOfUser)

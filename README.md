@@ -25,7 +25,7 @@ $ python3 bot.py
 ```
 
 ## Datos que tiene el usuario
-Dentro de la carpeta Data, cada usuario tiene su propia carpeta con el nombre de su identificador de Telegram en la que tiene alojados todos los datos con los que interactua. Hay 2 tipos de datos que puede tener en cualquier momento:
+Dentro de la carpeta Data, cada usuario tiene su propia carpeta, para identificar cual es la asignada de cada usuario, el nombre de esta se forma a partir del primer nombre del usuario, la inicial de su apellido, y los 5 ultimos digitos de su identificador de Telegram. Allá tendrá alojados todos sus datos. Hay 2 tipos distintos de datos que puede tener en cualquier momento:
 * data.dict: que representa la tabla simbolos propia del usuario.
 * *.sky: que representa uno de los Skylines que el usuario ha guardado previamente en disco.
 
