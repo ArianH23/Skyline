@@ -12,6 +12,7 @@ import pickle
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
 
+# Diccionari que guardará la taula de simbols de cada usuari que interactui amb el bot durant la sessió.
 listOfDictsCurrentSession = {}
 
 
@@ -146,8 +147,8 @@ def load(update, context):
     username = update.effective_chat.first_name
     last_nameI = ""
     if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]    
-        
+        last_nameI = update.effective_chat.last_name[0]
+
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
