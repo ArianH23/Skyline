@@ -247,8 +247,13 @@ class Skyline:
     def __replicate(self, rep):
         """
         Mètode que permet al Skyline fer l'operació de replicació donat un nombre de repeticions.
-        Desplaça els intervals pel numero de rep donat, i multiplica la llista de values per rep.
+        Afegeix als intervals donats replicacions rep vegades de la mateixa forma a la dreta, i 
+        multiplica la llista de values per rep replicant-la.
         """
+        # Si el Skyline es buit
+        if rep == 0:
+            return [0, 1], [0, 0]
+
         distance = self.__intervalos[-1] - self.__intervalos[0]
         intervalsToAppend = self.__intervalos[1:]
         valuesToReplicate = self.__values[:-1]
