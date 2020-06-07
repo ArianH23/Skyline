@@ -1,6 +1,5 @@
 from matplotlib import pyplot as plt
 from random import randint, random
-import time
 
 
 class Skyline:

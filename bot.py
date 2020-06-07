@@ -36,9 +36,10 @@ def help(update, context):
     message += "/clean: Es borraran tots els identificadors dels Skylines que tinguis definits en aquell moment.\n\n"
     message += "/save id: Es guardarà el Skyline que tinguis definit amb l'identificador 'id'.\n\n"
     message += "/load id: Es carregarà el Skyline que tinguis a disc amb l'identificador 'id'.\n\n"
-    message += "/disk: Es mostrarà els Skylines que tinguis a dic en aquell moment.\n\n"
+    message += "<b>NOU</b> /disk: Es mostrarà els Skylines que tinguis a dic en aquell moment."
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    context.bot.send_message(
+        chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)
 
 
 def author(update, context):
@@ -52,8 +53,12 @@ def lst(update, context):
     """Funció de la comanda /lst. Que mostra els identificadors de l'usuari."""
     username = update.effective_chat.first_name
     last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
     if not update.effective_chat.last_name is None:
         last_nameI = update.effective_chat.last_name[0]
+
+    # Ultims 5 digits del ID de telegram de l'usuari
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -67,7 +72,6 @@ def lst(update, context):
         for id, sky in userData.items():
             message += "<b>ID:</b> " + id + \
                 " | <b>Àrea</b>: " + str(sky.get_area()) + "\n"
-            # print(sky.area)
 
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message, parse_mode=ParseMode.HTML)
@@ -82,8 +86,12 @@ def clean(update, context):
     """Funció de la comanda /clean. Que borra tots els identificadors de l'usuari."""
     username = update.effective_chat.first_name
     last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
     if not update.effective_chat.last_name is None:
         last_nameI = update.effective_chat.last_name[0]
+
+    # Ultims 5 digits del ID de telegram de l'usuari
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -104,8 +112,12 @@ def save(update, context):
     """Funció de la comanda /save. Que guarda l'identificador \'id\' que especifiqui l'usuari a disc."""
     username = update.effective_chat.first_name
     last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
     if not update.effective_chat.last_name is None:
         last_nameI = update.effective_chat.last_name[0]
+
+    # Ultims 5 digits del ID de telegram de l'usuari
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -146,9 +158,12 @@ def load(update, context):
 
     username = update.effective_chat.first_name
     last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
     if not update.effective_chat.last_name is None:
         last_nameI = update.effective_chat.last_name[0]
 
+    # Ultims 5 digits del ID de telegram de l'usuari
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -173,7 +188,7 @@ def load(update, context):
         listOfDictsCurrentSession[userId] = userData
 
         message = "S'ha carregat correctament el Skyline amb ID: \'" + \
-            skyId + "\' a les teva taula de simbols i s'ha esborrat de disc!"
+            skyId + "\' a la teva taula de simbols de la sessió actual i s'ha esborrat de disc!"
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=message)
     else:
@@ -187,8 +202,12 @@ def disk(update, context):
 
     username = update.effective_chat.first_name
     last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
     if not update.effective_chat.last_name is None:
         last_nameI = update.effective_chat.last_name[0]
+
+    # Ultims 5 digits del ID de telegram de l'usuari
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -229,11 +248,15 @@ def leeElTexto(update, context):
     """
 
     message = update.message.text
-    print(message)
+
     username = update.effective_chat.first_name
     last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
     if not update.effective_chat.last_name is None:
         last_nameI = update.effective_chat.last_name[0]
+
+    # Ultims 5 digits del ID de telegram de l'usuari
     id = str(update.message.from_user['id'])[-5:]
 
     userId = username + last_nameI + id
@@ -257,6 +280,7 @@ def leeElTexto(update, context):
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=imgOrError)
 
+    # Si no hi ha hagut cap error, s'envia una imatge del Skyline, la seva àrea, i la seva alçada.
     else:
 
         sendPhoto(imgOrError, update, context)
@@ -273,23 +297,22 @@ def sendPhoto(photoOfSkyline, update, context):
     context.bot.send_photo(
         chat_id=update.effective_chat.id,
         photo=open(photoOfSkyline, 'rb'))
+
     remove(photoOfSkyline)
 
 
 def parse(message, userData, userId):
-    """Funció que analitza el missatge enviat per l'usuari per retornar un Skyline"""
+    """Funció que analitza el missatge enviat per l'usuari per retornar un Skyline en cas que el missatge sigui correcte."""
 
     visitor = EvalVisitor(userData, userId)
-    print("parsing")
-    code = InputStream(message)
 
+    code = InputStream(message)
     lexer = SkylineLexer(code)
     token_stream = CommonTokenStream(lexer)
     parser = SkylineParser(token_stream)
     tree = parser.root()
 
     imgOrError, height, area = visitor.visit(tree)
-    print("parsing done")
 
     return imgOrError, height, area
 
