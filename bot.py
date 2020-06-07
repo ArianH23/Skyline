@@ -63,6 +63,7 @@ def lst(update, context):
 
     userId = username + last_nameI + id
 
+    # Comproba si l'usuari té dades en la sessió actual
     if userId in listOfDictsCurrentSession:
 
         userData = listOfDictsCurrentSession[userId]
@@ -96,6 +97,7 @@ def clean(update, context):
 
     userId = username + last_nameI + id
 
+    # Comproba si l'usuari té dades en la sessió actual
     if userId in listOfDictsCurrentSession:
         del listOfDictsCurrentSession[userId]
 
@@ -125,10 +127,12 @@ def save(update, context):
 
     pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
 
+    # Comproba si l'usuari té dades en la sessió actual
     if userId in listOfDictsCurrentSession:
 
         userData = listOfDictsCurrentSession[userId]
 
+        # Comproba que el ID del Skyline existeix a les dades de l'usuari
         if skyId in userData:
             skyToSave = userData[skyId]
 
@@ -136,7 +140,7 @@ def save(update, context):
             pickle.dump(skyToSave, pickle_out_sky)
             pickle_out_sky.close()
 
-            message = "Skyline amb ID: \'" + skyId + "\' guardat correctament a disc!"
+            message = "El Skyline amb ID: \'" + skyId + "\' guardat correctament a disc!"
             context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message)
 
@@ -173,8 +177,10 @@ def load(update, context):
 
     userData = {}
 
+    # Comproba si el directori de l'usuari existeix a disc.
     if path.exists(pathOfUserSky):
 
+        # Comproba si l'usuari té dades en la sessió actual
         if userId in listOfDictsCurrentSession:
             userData = listOfDictsCurrentSession[userId]
 
@@ -214,6 +220,7 @@ def disk(update, context):
 
     pathOfUser = "Data/" + userId
 
+    # Comproba si el directori de l'usuari existeix a disc.
     if path.exists(pathOfUser):
         listOfSkies = []
 
@@ -265,14 +272,17 @@ def leeElTexto(update, context):
 
     userData = {}
 
+    # Comproba si l'usuari té dades en la sessió actual
     if userId in listOfDictsCurrentSession:
         userData = listOfDictsCurrentSession[userId]
 
+    # Si el directori de l'usuari no existeix a disc, es crea.
     if not path.exists(pathOfUser):
         mkdir(pathOfUser)
 
     imgOrError, height, area = parse(message, userData, userId)
 
+    # Guarda la nova taula de simbols de l'usuari
     listOfDictsCurrentSession[userId] = userData
 
     # Si height és -1, hi ha hagut un error i es comunica d'ell a l'usuari.
@@ -322,7 +332,7 @@ updater = Updater(token=TOKEN, use_context=True)
 dp = updater.dispatcher
 
 # Indica quina funció executa el bot depenen de l'ordre que rebi:
-# /start, /help, /author,/lst, /lst, /clean, /save o /load.
+# /start, /help, /author,/lst, /lst, /clean, /save, /load o /disk.
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('help', help))
 dp.add_handler(CommandHandler('author', author))

@@ -60,15 +60,15 @@ Mientras dure la sesión del bot, para cada usuario que interactue con él, el b
 
 Para que la gestión de datos funcione correctamente es necesario que exista la carpeta Data. Dentro de esta, cada usuario tiene su propia carpeta, para identificar cuál es la asignada a cada usuario, el nombre de esta se forma a partir del primer nombre del usuario, la inicial de su apellido (si es que tiene), y los 5 ultimos digitos de su identificador de Telegram. Allá estarán alojados todos los Skylines que el usuario haya guardado con el comando `/save id`, que serán ficheros con el identificador del Skyline como nombre más la extensión `.sky`, que podrán ser cargados en la tabla de simbolos del usuario.<br>
 
-Si el usuario quiere consultar la lista de Skylines que tiene actualmente en su tabla de simbolos puede usar el comando `/lst`.<br>
+Si el usuario quiere consultar la lista de Skylines que tiene actualmente en su tabla de simbolos puede usar el comando `/lst`. Si quiere borrar todos los identificadores puede usar el comando `/clean`.<br>
 
 El usuario tiene que tener en mente que la única forma de mantener un Skyline entre una sesión y otra del bot es utilizando el comando `/save id` para guardar el Skyline en disco.<br>
 
-Para ver la lista de Skylines guardados en disco previamente por el usuario se ha añadido un nuevo comando `/disk` para evitar confusiones y que no sea imprescindible para el usuario recordar el nombre de los Skylines que se han guardado previamente.<br>
+Si el usuario quiere consultar la lista de Skylines que tiene actualmente en disco puede usar el nuevo comando `/disk`, que está explicado más abajo.<br>
 
 Para cargar el sky en la tabla de símbolos actual del usuario basta con usar `/load id`. Este comando además borrará el Skyline de disco para dejar más espacio.
 ## Comando adicional: /disk
-Este comando se ha creado para que el usuario pueda saber cuales son los Skylines guardados en disco ya que no habia otra forma de saberlo anteriormente.<br>
+Este comando se ha creado para que el usuario pueda saber cuales son los Skylines guardados en disco ya que no habia otra forma de saberlo anteriormente. Esto evitará que sea imprescindible para él tener que recordar el nombre de los Skylines que ha guardado entre sesión y sesión.<br>
 Para usarlo basta con enviar `/disk` al bot, si el usuario tiene Skylines en disco, se le mostrará el nombre de estos, en caso contrario el bot enviará un mensaje indicando que no hay ningún Skyline suyo en disco.
 ## Built With
 
