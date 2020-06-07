@@ -66,7 +66,7 @@ El usuario tiene que tener en mente que la única forma de mantener un Skyline e
 
 Si el usuario quiere consultar la lista de Skylines que tiene actualmente en disco puede usar el nuevo comando `/disk`, que está explicado más abajo.<br>
 
-Para cargar el sky en la tabla de símbolos actual del usuario basta con usar `/load id`. Este comando además borrará el Skyline de disco para dejar más espacio.
+Para cargar el sky en la tabla de símbolos actual del usuario basta con usar `/load id` de aquel Skyline que tenga en disco. Este comando además borrará el Skyline de disco para dejar más espacio.
 ## Comando adicional: /disk
 Este comando se ha creado para que el usuario pueda saber cuales son los Skylines guardados en disco ya que no habia otra forma de saberlo anteriormente. Esto evitará que sea imprescindible para él tener que recordar el nombre de los Skylines que ha guardado entre sesión y sesión.<br>
 Para usarlo basta con enviar `/disk` al bot, si el usuario tiene Skylines en disco, se le mostrará el nombre de estos, en caso contrario el bot enviará un mensaje indicando que no hay ningún Skyline suyo en disco.

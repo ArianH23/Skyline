@@ -8,35 +8,35 @@ statement: ident ASSIGN expr                            # assignment
         ;
 
 expr:
-	LP expr RP											# parenthesis
+    LP expr RP                                          # parenthesis
 
-	| MINUS expr				        				# mirror
+    | MINUS expr                                        # mirror
 
-	| expr MULT expr			        				# interRepli
+    | expr MULT expr                                    # interRepli
 
-	| expr (PLUS | MINUS) expr	                		# unionOffset
+    | expr (PLUS | MINUS) expr                          # unionOffset
 
-	| skyCreation				        				# skylineValue
+    | skyCreation                                       # skylineValue
 
-	| integerValue										# newIntegerValue
+    | integerValue                                      # newIntegerValue
 
-	| ident												# exprIdent
-        ;
+    | ident                                             # exprIdent
+    ;
 
 ident: ID;
 
-skyCreation: 	sky                                                                                             //Simple
-		| LB sky (COMMA sky)* RB                                                                                //Compost
-		| LC integerValue COMMA integerValue COMMA integerValue COMMA integerValue COMMA integerValue RC        //Random
-	        ; 
+skyCreation:    sky                                                                                             //Simple
+        | LB sky (COMMA sky)* RB                                                                                //Compost
+        | LC integerValue COMMA integerValue COMMA integerValue COMMA integerValue COMMA integerValue RC        //Random
+        ; 
 
 sky: (LP integerValue COMMA integerValue COMMA integerValue RP);
 
-integerValue: MINUS INTVAL                              # negIntegerValue
+integerValue: MINUS INTVAL                                    # negIntegerValue
 
-        | INTVAL                                        # posIntegerValue
+              | INTVAL                                        # posIntegerValue
 
-        ;
+              ;
 
 LC: '{';
 RC: '}';

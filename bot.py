@@ -225,7 +225,7 @@ def disk(update, context):
         listOfSkies = []
 
         for file in listdir(pathOfUser):
-            # Suposarem que només hi ha Skylines a la seva carpeta
+            # Només hi ha Skylines a la seva carpeta
             listOfSkies.append(file[:-4])
 
         if len(listOfSkies) > 0:

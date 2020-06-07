@@ -10,11 +10,13 @@ if __name__ is not None and "." in __name__:
 
 class EvalVisitor(SkylineVisitor):
     def __init__(self, ts, id):
+        """Creadora de la classe EvalVisitor"""
         self.ts = ts
         self.id = id
         self.pathOfUserData = "Data/" + self.id + "/data.dict"
 
     def visitRoot(self, ctx: SkylineParser.RootContext):
+        """Visitor del root"""
         res = self.visit(ctx.statement())
 
         # Si s'ha detectat algun error, retorna'l:
@@ -28,6 +30,8 @@ class EvalVisitor(SkylineVisitor):
         return img, height, area
 
     def visitAssignment(self, ctx: SkylineParser.AssignmentContext):
+        """Visitor del opeador d'assignació"""
+
         ident = self.visit(ctx.ident())
         sky = self.visit(ctx.expr())
 
@@ -40,14 +44,20 @@ class EvalVisitor(SkylineVisitor):
         return sky
 
     def visitExprValue(self, ctx: SkylineParser.ExprValueContext):
+        """Visitor del opeador d'ExprValue"""
+
         res = self.visitChildren(ctx)
 
         return res
 
     def visitParenthesis(self, ctx: SkylineParser.ParenthesisContext):
+        """Visitor del opeador de Parenthesis"""
+
         return self.visit(ctx.expr())
 
     def visitMirror(self, ctx: SkylineParser.MirrorContext):
+        """Visitor del opeador Mirror"""
+
         sky = self.visit(ctx.expr())
 
         # Comprobació de si sky és un error.
@@ -57,6 +67,8 @@ class EvalVisitor(SkylineVisitor):
         return -sky
 
     def visitInterRepli(self, ctx: SkylineParser.InterRepliContext):
+        """Visitor del opeador InterRepli"""
+
         sky = self.visit(ctx.expr(0))
         val = self.visit(ctx.expr(1))
 
@@ -71,6 +83,7 @@ class EvalVisitor(SkylineVisitor):
         return ret
 
     def visitUnionOffset(self, ctx: SkylineParser.UnionOffsetContext):
+        """Visitor del opeador UnionOffset"""
 
         sky = self.visit(ctx.expr(0))
         val = self.visit(ctx.expr(1))
@@ -91,10 +104,13 @@ class EvalVisitor(SkylineVisitor):
             return ret
 
     def visitSkylineValue(self, ctx: SkylineParser.SkylineValueContext):
+        """Visitor del opeador SkylineValue"""
 
         return self.visit(ctx.skyCreation())
 
     def visitExprIdent(self, ctx: SkylineParser.ExprIdentContext):
+        """Visitor del opeador ExprIdent"""
+
         id = self.visit(ctx.ident())
 
         if id in self.ts:
@@ -105,10 +121,14 @@ class EvalVisitor(SkylineVisitor):
             return "ID \'" + id + "\' no trobat"
 
     def visitIdent(self, ctx: SkylineParser.IdentContext):
+        """Visitor del opeador Ident"""
+
         id = ctx.ID().getText()
         return id
 
     def visitSkyCreation(self, ctx: SkylineParser.SkyContext):
+        """Visitor del opeador SkyCreation"""
+
         # Creacio de Skyline compost
         if ctx.LB():
 
@@ -159,6 +179,8 @@ class EvalVisitor(SkylineVisitor):
             return self.visitSky(ctx.sky(0))
 
     def visitSky(self, ctx: SkylineParser.SkyContext):
+        """Visitor del opeador Sky"""
+
         xmin = self.visit(ctx.integerValue(0))
         height = self.visit(ctx.integerValue(1))
         xmax = self.visit(ctx.integerValue(2))
@@ -174,11 +196,15 @@ class EvalVisitor(SkylineVisitor):
         return Skyline(xmin, height, xmax)
 
     def visitPosIntegerValue(self, ctx: SkylineParser.PosIntegerValueContext):
+        """Visitor del opeador PosInterValue"""
+
         value = int(ctx.INTVAL().getText())
 
         return value
 
     def visitNegIntegerValue(self, ctx: SkylineParser.NegIntegerValueContext):
+        """Visitor del opeador NegIntegerValue"""
+
         value = int(ctx.INTVAL().getText())
 
         return -value

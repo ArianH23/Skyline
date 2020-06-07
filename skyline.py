@@ -368,6 +368,7 @@ class Skyline:
                         index1 += 1
 
             index1 = posLittleArr2inArr1
+
         # El objetivo principal de todo lo que se ha hecho anteriormente es
         # utilizar una unica funcion extend en vez de varios appends si es posible,
         # eso aumenta muchisimo la eficiencia de la operacion en Skylines grandes
