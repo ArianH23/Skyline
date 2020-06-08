@@ -246,7 +246,7 @@ class Skyline:
     def __replicate(self, rep):
         """
         Mètode que permet al Skyline fer l'operació de replicació donat un nombre de repeticions.
-        Afegeix als intervals donats replicacions rep vegades de la mateixa forma a la dreta, i 
+        Afegeix als intervals donats replicacions rep vegades de la mateixa forma a la dreta, i
         multiplica la llista de values per rep replicant-la.
         """
         # Si el Skyline es buit

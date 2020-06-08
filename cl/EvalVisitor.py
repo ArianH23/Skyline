@@ -1,4 +1,3 @@
-# Generated from Skyline.g by ANTLR 4.7.2
 from skyline import *
 import pickle
 from .SkylineLexer import SkylineLexer

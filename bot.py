@@ -51,17 +51,7 @@ def author(update, context):
 
 def lst(update, context):
     """Funció de la comanda /lst. Que mostra els identificadors de l'usuari."""
-    username = update.effective_chat.first_name
-    last_nameI = ""
-
-    # Comproba si l'usuari té cognom.
-    if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]
-
-    # Ultims 5 digits del ID de telegram de l'usuari
-    id = str(update.message.from_user['id'])[-5:]
-
-    userId = username + last_nameI + id
+    userId = getUserId(update)
 
     # Comproba si l'usuari té dades en la sessió actual
     if userId in listOfDictsCurrentSession:
@@ -85,17 +75,7 @@ def lst(update, context):
 
 def clean(update, context):
     """Funció de la comanda /clean. Que borra tots els identificadors de l'usuari."""
-    username = update.effective_chat.first_name
-    last_nameI = ""
-
-    # Comproba si l'usuari té cognom.
-    if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]
-
-    # Ultims 5 digits del ID de telegram de l'usuari
-    id = str(update.message.from_user['id'])[-5:]
-
-    userId = username + last_nameI + id
+    userId = getUserId(update)
 
     # Comproba si l'usuari té dades en la sessió actual
     if userId in listOfDictsCurrentSession:
@@ -112,17 +92,9 @@ def clean(update, context):
 
 def save(update, context):
     """Funció de la comanda /save. Que guarda l'identificador \'id\' que especifiqui l'usuari a disc."""
-    username = update.effective_chat.first_name
-    last_nameI = ""
 
-    # Comproba si l'usuari té cognom.
-    if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]
+    userId = getUserId(update)
 
-    # Ultims 5 digits del ID de telegram de l'usuari
-    id = str(update.message.from_user['id'])[-5:]
-
-    userId = username + last_nameI + id
     skyId = update.message.text.split()[1]
 
     pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
@@ -160,17 +132,8 @@ def save(update, context):
 def load(update, context):
     """Funció de la comanda /load. Que carrega l'identificador \'id\' de disc que especifiqui l'usuari i el borra de disc."""
 
-    username = update.effective_chat.first_name
-    last_nameI = ""
+    userId = getUserId(update)
 
-    # Comproba si l'usuari té cognom.
-    if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]
-
-    # Ultims 5 digits del ID de telegram de l'usuari
-    id = str(update.message.from_user['id'])[-5:]
-
-    userId = username + last_nameI + id
     skyId = update.message.text.split()[1]
 
     pathOfUserSky = "Data/" + userId + "/" + skyId + ".sky"
@@ -206,17 +169,7 @@ def load(update, context):
 def disk(update, context):
     """Funció de la comanda /disk. Que mostra els identificadors de l'usuari a disc."""
 
-    username = update.effective_chat.first_name
-    last_nameI = ""
-
-    # Comproba si l'usuari té cognom.
-    if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]
-
-    # Ultims 5 digits del ID de telegram de l'usuari
-    id = str(update.message.from_user['id'])[-5:]
-
-    userId = username + last_nameI + id
+    userId = getUserId(update)
 
     pathOfUser = "Data/" + userId
 
@@ -256,17 +209,7 @@ def leeElTexto(update, context):
 
     message = update.message.text
 
-    username = update.effective_chat.first_name
-    last_nameI = ""
-
-    # Comproba si l'usuari té cognom.
-    if not update.effective_chat.last_name is None:
-        last_nameI = update.effective_chat.last_name[0]
-
-    # Ultims 5 digits del ID de telegram de l'usuari
-    id = str(update.message.from_user['id'])[-5:]
-
-    userId = username + last_nameI + id
+    userId = getUserId(update)
 
     pathOfUser = "Data/" + userId
 
@@ -325,6 +268,24 @@ def parse(message, userData, userId):
     imgOrError, height, area = visitor.visit(tree)
 
     return imgOrError, height, area
+
+
+def getUserId(update):
+    """Funció que retorna el userId associat al usuari"""
+
+    username = update.effective_chat.first_name
+    last_nameI = ""
+
+    # Comproba si l'usuari té cognom.
+    if update.effective_chat.last_name is not None:
+        last_nameI = update.effective_chat.last_name[0]
+
+    # Ultims 5 digits del ID de telegram de l'usuari
+    id = str(update.message.from_user['id'])[-5:]
+
+    userId = username + last_nameI + id
+
+    return userId
 
 
 # crea objectes per treballar amb Telegram
